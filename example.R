@@ -6,11 +6,12 @@
 
 source('ampCounter.R')
 
-#simple examples
+#simple example of 3 forward and 3 reverse primers
 forwards<-c(10,20,30)
 reverses<-c(50,60,70)
 frags<-countAmplifications(forwards,reverses,expectedLength=120)
 pdf('example3x3primers.pdf')
+	par(mar=c(3.5,3.5,.2,.2),mgp=c(2.5,1,0),las=1)
 	plotFrags(frags)
 	abline(v=forwards,lty=2,col='#FF000033')
 	abline(v=reverses,lty=2,col='#0000FF33')
