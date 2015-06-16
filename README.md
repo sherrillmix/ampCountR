@@ -1,5 +1,5 @@
 # ampCounter
-Some R functions to count the expected amplifications for genomic regions given a set of primer binding locations for a multiple displacement amplification reaction. The main function is <code>countAmplifications()</code> which can be used like:
+Some R functions to count the expected amplifications for genomic regions given a set of primer binding locations for a [http://en.wikipedia.org/wiki/Multiple_displacement_amplification](multiple displacement amplification) reaction. The main function is <code>countAmplifications()</code> which can be used like:
 ```
 countAmplifications(forwardPrimerLocations,reversePrimerLocations,vocal=TRUE)
 ```
