@@ -2,7 +2,7 @@
 ##Creation date: Jun 15, 2015
 ##Last modified: Tue Jun 16, 2015  11:00AM
 ##Created by: scott
-##Summary: Count amplification fold expected for multiple strand displacement
+##Summary: Functions to count fold amplification expected for multiple strand displacement
 
 
 countAmplifications<-function(forwards,reverses,strand='+',fragmentStart=1,fragmentEnd=Inf,baseName='',expectedLength=50000,vocal=FALSE){
@@ -41,7 +41,7 @@ countAmplifications<-function(forwards,reverses,strand='+',fragmentStart=1,fragm
 	return(out)
 }
 
-plotFrags<-function(frags,forwards,reverses,label=TRUE){
+plotFrags<-function(frags,label=TRUE){
 	frags<-frags[order(frags$name,decreasing=TRUE),]
 	nFrags<-nrow(frags)
 	plot(1,1,type='n',xlim=range(frags[,c('start','end')]),ylim=c(1,nFrags)+c(-.5,.5),xlab='Genome position (nt)',ylab='Fragment',yaxs='i')
@@ -55,7 +55,7 @@ generateRandomPrimers<-function(genomeSize,frequency){
 	return(out)
 }
 
-#inefficient check coverage
+#inefficient coverage count 
 #starts:starts of coverage ranges
 #ends:ends of coverage ranges
 countCover<-function(starts,ends,vocal=FALSE){
