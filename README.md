@@ -3,6 +3,16 @@ Some R functions to count the expected amplifications for genomic regions given 
 ```
 countAmplifications(forwardPrimerLocations,reversePrimerLocations,vocal=TRUE)
 ```
+A simple example of 3 forward primers and 3 reverse primers is:
+```
+forwards<-c(10,20,30)
+reverses<-c(50,60,70)
+frags<-countAmplifications(forwards,reverses,expectedLength=120)
+```
+This generates predicted fragments of:
+![Predicted fragments from 3 forward, 3 reverse primers](example3x3primers.png)
+
+
 A more detailed example is given in example.R:
 ```R
 source('ampCounter.R')
@@ -17,7 +27,7 @@ revFrags<-countAmplifications(forwards,reverses,vocal=TRUE,strand='-')
 #+2 for original + and - strand
 cover<-countCover(c(frags$start,revFrags$start),c(frags$end,revFrags$end),vocal=TRUE)+2
 ```
-To generate an example predicted fold enrichments of:
+This generates an example predicted fold enrichments of:
 ![Example of fold enrichment predictions](predictedEnrichmentExample.png)
 
 The code does not currently try to account for the start and end of primer binding sites and just treats each primer as a single location. This would be an easy extension. Because of this, it is necessary to guarantee that no forward and reverse locations share the same location (e.g. by throwing out duplicates or adding a small amount, say .5, to the reverse primers).

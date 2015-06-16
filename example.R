@@ -6,6 +6,18 @@
 
 source('ampCounter.R')
 
+#simple examples
+forwards<-c(10,20,30)
+reverses<-c(50,60,70)
+frags<-countAmplifications(forwards,reverses,expectedLength=120)
+pdf('example3x3primers.pdf')
+	plotFrags(frags)
+	abline(v=forwards,lty=2,col='#FF000033')
+	abline(v=reverses,lty=2,col='#0000FF33')
+dev.off()
+
+
+
 #1Mb genome with primers spaced around every ~5kb (i.e. every 10kb in + or -)
 forwards<-generateRandomPrimers(1e6,10000)
 #+.5 to make sure we don't get any overlaps with forwards
@@ -34,4 +46,5 @@ pdf('predictedCover.pdf',width=10)
 	abline(v=forwards,lty=2,col='#FF000033')
 	abline(v=reverses,lty=2,col='#0000FF33')
 dev.off()
+
 
