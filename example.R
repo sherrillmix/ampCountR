@@ -6,8 +6,10 @@
 
 source('ampCounter.R')
 
+#1Mb genome with primers spaced around every ~5kb (i.e. every 10kb in + or -)
 forwards<-generateRandomPrimers(1e6,10000)
-reverses<-generateRandomPrimers(1e6,10000)+.5 #+.5 to make sure we don't get any overlaps with forwards
+#+.5 to make sure we don't get any overlaps with forwards
+reverses<-generateRandomPrimers(1e6,10000)+.5
 message('Calculating positive strand fragments')
 frags<-countAmplifications(forwards,reverses,vocal=TRUE)
 message('Calculating negative strand fragments')
@@ -20,9 +22,15 @@ pdf('predictedFragments.pdf',height=100,width=100)
 dev.off()
 
 message('Calculating cover')
-cover<-countCover(c(frags$start,revFrags$start),c(frags$end,revFrags$end),vocal=TRUE)+2 #+2 for original + and - strand
+#+2 for original + and - strand
+cover<-countCover(c(frags$start,revFrags$start),c(frags$end,revFrags$end),vocal=TRUE)+2 
+#started with two copies so fold enrichment is divide by 2
+cover<-cover/2
 pdf('predictedCover.pdf',width=10)
-	plot(cover$pos,cover$cover,type='l',ylab='Predicted coverage',xlab='Genome position')
+	par(mar=c(3.7,3.7,.2,.2))
+	plot((1:length(cover)),cover,type='l',ylab='Predicted fold enrichment',xlab='Genome position (100kb)',log='y',las=1,xaxt='n',mgp=c(2.7,1,0))
+	prettyX<-pretty(c(1,length(cover)/1e5))
+	axis(1,prettyX*1e5,prettyX)
 	abline(v=forwards,lty=2,col='#FF000033')
 	abline(v=reverses,lty=2,col='#0000FF33')
 dev.off()
