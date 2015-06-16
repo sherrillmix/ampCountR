@@ -1,6 +1,6 @@
 ##File name: example.R
 ##Creation date: Jun 16, 2015
-##Last modified: Tue Jun 16, 2015  11:00AM
+##Last modified: Tue Jun 16, 2015  04:00PM
 ##Created by: scott
 ##Summary: An example coverage prediction on random primers
 
@@ -29,7 +29,7 @@ message('Calculating negative strand fragments')
 revFrags<-countAmplifications(forwards,reverses,vocal=TRUE,strand='-')
 revFrags$name<-sprintf('-%s',revFrags$name)
 pdf('predictedFragments.pdf',height=100,width=100)
-	plotFrags(rbind(frags,revFrags),forwards,reverses,label=FALSE)
+	plotFrags(rbind(frags,revFrags),label=FALSE)
 	abline(v=forwards,lty=2,col='#FF000033')
 	abline(v=reverses,lty=2,col='#0000FF33')
 dev.off()
