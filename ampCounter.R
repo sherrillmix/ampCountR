@@ -1,11 +1,12 @@
 ##File name: ampCounter.R
 ##Creation date: Jun 15, 2015
-##Last modified: Tue Jun 16, 2015  11:00AM
+##Last modified: Tue Jun 30, 2015  08:00AM
 ##Created by: scott
 ##Summary: Functions to count fold amplification expected for multiple strand displacement
 
 
-countAmplifications<-function(forwards,reverses,strand='+',fragmentStart=1,fragmentEnd=Inf,baseName='',expectedLength=50000,vocal=FALSE){
+countAmplifications<-function(forwards,reverses,strand='+',fragmentStart=1,fragmentEnd=Inf,baseName='',expectedLength=50000,vocal=FALSE,weights=rep(1,expectedLength+1),weight=1,minLength=1){
+	if(vocal&runif(1)<.001)cat('.')
 	if(any(diff(forwards)<1)||any(diff(reverses)<1))stop(simpleError('Expects sorted primer positions')) #could handle ahead of time
 	if(strand=='+'){
 		thisStarts<-forwards[forwards>=fragmentStart&forwards<=fragmentEnd] #ignores primer length for now
@@ -28,12 +29,14 @@ countAmplifications<-function(forwards,reverses,strand='+',fragmentStart=1,fragm
 		'end'=thisEnds,
 		'strand'=strand,
 		'name'=sprintf(sprintfPattern,baseName,1:nFrags),
+		'weight'=weight,
+		'length'=thisEnds-thisStarts+1
 		stringsAsFactors=FALSE
 	)
+	out<-out[out$length>=minLength,]
 	if(any(!isTerminal)){
 		daughters<-do.call(rbind,mapply(function(start,end,name){
-				if(vocal)cat('.')
-				countAmplifications( forwards, reverses, strand=ifelse(strand=='+','-','+'), start, end, expectedLength=expectedLength, baseName=name)
+			countAmplifications( forwards, reverses, strand=ifelse(strand=='+','-','+'), start, end, expectedLength=expectedLength, baseName=name,vocal=vocal,weight=weight*weights[end-start+1],weights=weights)
 		},
 		out[!isTerminal,'start'],out[!isTerminal,'end'],out[!isTerminal,'name'],SIMPLIFY=FALSE))
 		out<-rbind(out,daughters)
@@ -58,12 +61,16 @@ generateRandomPrimers<-function(genomeSize,frequency){
 #inefficient coverage count 
 #starts:starts of coverage ranges
 #ends:ends of coverage ranges
-countCover<-function(starts,ends,vocal=FALSE){
-	cover<-rep(0,max(ends))	 #bad for big empty genome
-	mapply(function(start,end){
-		if(vocal)if(runif(1)<.01)cat('.')
-		cover[start:end]<<-cover[start:end]+1
-	},starts,ends) #global abuse
+countCover<-function(starts,ends,strands=rep('+',length(starts)),perBaseWeights=rep(1,max(ends-starts+1)),fragmentWeights=rep(1,length(starts)),vocal=FALSE,coverEnd=max(ends)){
+	if(any(ends-starts+1>length(perBaseWeights)))stop(simpleError('Fragment found longer than weight vector'))
+	if(any(ends>coverEnd))stop(simpleError('Fragment ends extend beyond max length'))
+	cover<-rep(0,coverEnd)	 #bad for big empty genome
+	mapply(function(start,end,strand,weight){
+		if(vocal)if(runif(1)<.0001)cat('.')
+		revFunc<-ifelse(strand=='+',c,rev)
+		cover[start:end]<<-cover[start:end]+perBaseWeights[revFunc(1:(end-start+1))]*weight
+		return(NULL)
+	},starts,ends,strands,fragmentWeights) #global abuse
 	return(cover)
 }
 
