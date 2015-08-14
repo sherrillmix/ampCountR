@@ -1,13 +1,13 @@
 # ampCounter
-Some R functions to count the expected amplifications for genomic regions given a set of primer binding locations for a [multiple displacement amplification](http://en.wikipedia.org/wiki/Multiple_displacement_amplification) reaction. The main function is <code>countAmplifications()</code> which can be used like:
+Some R functions to count the expected amplifications for genomic regions given a set of primer binding locations for a [multiple displacement amplification](http://en.wikipedia.org/wiki/Multiple_displacement_amplification) reaction. The main function is <code>enumerateAmplifications()</code> which can be used like:
 ```
-countAmplifications(forwardPrimerLocations,reversePrimerLocations,vocal=TRUE)
+enumerateAmplifications(forwardPrimerLocations,reversePrimerLocations,vocal=TRUE)
 ```
 A simple example of 3 forward primers and 3 reverse primers is:
 ```
 forwards<-c(10,20,30)
 reverses<-c(50,60,70)
-frags<-countAmplifications(forwards,reverses,expectedLength=120)
+frags<-enumerateAmplifications(forwards,reverses,expectedLength=120)
 ```
 This generates predicted fragments of:
 ![Predicted fragments from 3 forward, 3 reverse primers](example3x3primers.png)
@@ -21,8 +21,8 @@ forwards<-generateRandomPrimers(1e6,10000)
 #+.5 to make sure we don't get any overlaps with forwards
 reverses<-generateRandomPrimers(1e6,10000)+.5
 
-frags<-countAmplifications(forwards,reverses,vocal=TRUE)
-revFrags<-countAmplifications(forwards,reverses,vocal=TRUE,strand='-')
+frags<-enumerateAmplifications(forwards,reverses,vocal=TRUE)
+revFrags<-enumerateAmplifications(forwards,reverses,vocal=TRUE,strand='-')
 
 #+2 for original + and - strand
 cover<-countCover(c(frags$start,revFrags$start),c(frags$end,revFrags$end),vocal=TRUE)+2
