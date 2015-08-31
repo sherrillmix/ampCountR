@@ -1,7 +1,7 @@
 all: docs package
 
-docs: ampCounter.R
+docs: R/*.R
 	R -e 'devtools::document()'
 
-package: docs ampCounter.R DESCRIPTION
+package: docs R/*.R DESCRIPTION
 	R -e 'devtools::build()'
