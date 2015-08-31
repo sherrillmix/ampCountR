@@ -2,4 +2,5 @@
 
 export(countAmplifications)
 export(enumerateAmplifications)
+export(generateAmplificationTable)
 export(plotFrags)

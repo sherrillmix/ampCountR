@@ -2,29 +2,25 @@
 % Please edit documentation in R/ampCounter.R
 \name{countAmplifications}
 \alias{countAmplifications}
-\title{Fast calculation of expected multiple strand displacement amplification}
+\title{Calculate expected multiple strand displacement amplification using lookup table}
 \usage{
-countAmplifications(nForwards = 10, nReverses = 10)
+countAmplifications(nForwards, nReverses)
 }
 \arguments{
-\item{nForwards}{Calculate a matrix from zero to this many forward primers}
+\item{nForwards}{Calculate the expected amplifcations for a region with nForwards primers 5' on the correct strand and within range}
 
-\item{nReverses}{Calculate a matrix from zero to this many reverse primers}
+\item{nReverses}{Calculate the expected amplifcations for a region with nReverses primers 3' on the correct strand and within range}
 }
 \value{
-A nForwards+1 row, nReverses+1 column matrix of the expected amplifications for each combination of numbers
-of forward and reverse primers. Row 1 is for 0 forward primers within range, row 2 is for 1 forward primer,
-column 1 is for 0 reverse primers, column 2 is for 1 reverse primers ...
+The number of expected amplifications
 }
 \description{
-Uses dynamic programing to build a matrix of the expected amplifications for positions with a given a number
-of forward primers upstream and reverse primers downstream and within range of the polymerase.
+Uses the amplificationLookup table stored in the package data to predict amplification based on the number of forward and reverse primers spanning a region. To keep the lookup table small, I limited this to 1000 forward and reverse primers but it could be extended easily.
 }
 \examples{
 countAmplifications(20,20)
-}
-\seealso{
-\code{\link{enumerateAmplifications}}
+countAmplifications(0,20)
+countAmplifications(20,0)
 }
 \concept{
 multiple strand displacement amplification fragment prediction dynamic programming

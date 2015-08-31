@@ -33,7 +33,7 @@
 #' @export
 #' 
 #' @examples
-#' countAmplifications(c(10,20,30),c(40,50,60))
+#' enumerateAmplifications(c(10,20,30),c(40,50,60))
 enumerateAmplifications<-function(forwards,reverses,strand='+',expectedLength=50000,minLength=1,maxTotalLength=Inf,fragmentStart=1,fragmentEnd=Inf,baseName='',vocal=FALSE,previousLength=0){
 	if(vocal&&runif(1)<.001)cat('.')
 	if(vocal&&runif(1)<.0001)cat(sprintf(' %d ',fragmentStart))
@@ -158,8 +158,8 @@ countCover<-function(starts,ends,strands=rep('+',length(starts)),stayOnRate=1,pe
 #' @export
 #' 
 #' @examples
-#' countAmplifications(20,20)
-countAmplifications<-function(nForwards=10,nReverses=10){
+#' generateAmplificationTable(20,20)
+generateAmplificationTable<-function(nForwards=10,nReverses=10){
 	out<-matrix(NA,nrow=nForwards+1,ncol=nReverses+1)
 	rownames(out)<-0:nForwards
 	colnames(out)<-0:nReverses
@@ -175,19 +175,27 @@ countAmplifications<-function(nForwards=10,nReverses=10){
 	return(out)
 }
 
-if(FALSE){
-recursiveTimes<-system.time(predMat<-outer(0:10,0:10,function(xx,yy)mapply(function(x,y){
-		message(x,'-',y)
-		fs<-1:x
-		rs<-20+1:y
-		if(x==0)fs<-c()
-		if(y==0)rs<-c()
-		out<-countAmplifications(fs,rs,expectedLength=100)
-		if(is.null(out))out<-0
-		else out<-nrow(out)
-		return(out)
-},xx,yy)))
-dynamicTime<-system.time(dynamicCounts())
+#' Calculate expected multiple strand displacement amplification using lookup table
+#' 
+#' Uses the amplificationLookup table stored in the package data to predict amplification based on the number of forward and reverse primers spanning a region. To keep the lookup table small, I limited this to 1000 forward and reverse primers but it could be extended easily. 
+#'
+#' @param nForwards Calculate the expected amplifcations for a region with nForwards primers 5' on the correct strand and within range
+#' @param nReverses Calculate the expected amplifcations for a region with nReverses primers 3' on the correct strand and within range
+#'
+#' @return The number of expected amplifications
+#'
+#' @concept multiple strand displacement amplification fragment prediction dynamic programming
+#'
+#' @export
+#' 
+#' @examples
+#' countAmplifications(20,20)
+#' countAmplifications(0,20)
+#' countAmplifications(20,0)
+countAmplifications<-function(nForwards,nReverses){
+	if(nForwards>1000)stop(simpleError(sprintf('To avoid a large lookup table countAmplifications limited to less than 1000 forward primers. Maybe use generateAmplificationTable(%d,%d) directly',nForwards,nReverses)))
+	if(nReverses>1000)stop(simpleError(sprintf('To avoid a large lookup table countAmplifications limited to less than 1000 reverse primers. Maybe use generateAmplificationTable(%d,%d) directly',nForwards,nReverses)))
+	amplificationLookup[nForwards+1,nReverses+1]
 }
 
 
