@@ -1,6 +1,6 @@
 ##File name: ampCounter.R
 ##Creation date: Jun 15, 2015
-##Last modified: Fri Aug 14, 2015  03:00PM
+##Last modified: Mon Aug 31, 2015  10:00AM
 ##Created by: scott
 ##Summary: Functions to count fold amplification expected for multiple strand displacement
 
@@ -190,3 +190,13 @@ recursiveTimes<-system.time(predMat<-outer(0:10,0:10,function(xx,yy)mapply(funct
 dynamicTime<-system.time(dynamicCounts())
 }
 
+
+#' Lookup table for predicted amplifcation 
+#'
+#' A 1001x1001 matrix of predicted amplification for regions spanned by 0-1000 primers
+#'
+#' @format A 1001 row, 1001 column matrix of the expected amplifications for each combination of 0-1000
+#' forward and reverse primers spanning a region. Row 1 is for 0 forward primers within range, row 2 is for 1 forward primer,
+#' column 1 is for 0 reverse primers, column 2 is for 1 reverse primers ...
+#' @source countAmplifications(1000,1000)
+"amplificationLookup"
