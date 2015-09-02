@@ -8,7 +8,7 @@
 forward and reverse primers spanning a region. Row 1 is for 0 forward primers within range, row 2 is for 1 forward primer,
 column 1 is for 0 reverse primers, column 2 is for 1 reverse primers ...}
 \source{
-countAmplifications(1000,1000)
+generateAmplificationTable(1000,1000)
 }
 \usage{
 amplificationLookup
