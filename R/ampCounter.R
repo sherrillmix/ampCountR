@@ -1,6 +1,6 @@
 ##File name: ampCounter.R
 ##Creation date: Jun 15, 2015
-##Last modified: Wed Sep 02, 2015  10:00AM
+##Last modified: Thu Sep 03, 2015  11:00AM
 ##Created by: scott
 ##Summary: Functions to count fold amplification expected for multiple strand displacement
 
@@ -195,8 +195,8 @@ countAmplifications<-function(nForwards,nReverses){
 #'      \describe{
 #'        \item{start}{1-based start coordinate of region}
 #'        \item{end}{1-based end coordinate of region}
-#'        \item{forwards}{number of forward primers spanning the region}
-#'        \item{reverses}{number of reverse primers spanning the region}
+#'        \item{forwards}{number of forward primers spanning the region (for predictAmplificationsSingleStrand)}
+#'        \item{reverses}{number of reverse primers spanning the region (for predictAmplificationsSingleStrand)}
 #'        \item{amplifications}{expected amplifcations for the region}
 #'      }
 #'
@@ -206,16 +206,17 @@ countAmplifications<-function(nForwards,nReverses){
 #' 
 #' @examples
 #' predictAmplificationsSingleStrand(c(1,10,20),c(15,25,35),maxLength=40,genomeSize=45)
+#' predictAmplifications(c(1,10,20),c(15,25,35),maxLength=40,genomeSize=45)
 predictAmplificationsSingleStrand<-function(forwards,reverses,maxLength=30000,genomeSize=max(c(forwards+maxLength-1,reverses))){
 	nForwards<-length(forwards)
 	nReverses<-length(reverses)
-	pos<-c(forwards,forwards+maxLength-1,reverses-maxLength+1,reverses+1)
+	pos<-c(forwards,forwards+maxLength,reverses-maxLength+1,reverses+1) #forwards+maxLength not -1 because the drop should be on the base after last base of amplification
 	forwardPlus<-c(rep(c(1,-1),each=nForwards),rep(0,nReverses*2))
 	reversePlus<-c(rep(0,nForwards*2),rep(c(1,-1),each=nReverses))
 	posOrder<-order(pos)
 	pos<-pos[posOrder]
-	forwardPlus<-forwardPlus[posOrder]	
-	reversePlus<-reversePlus[posOrder]	
+	forwardPlus<-forwardPlus[posOrder]
+	reversePlus<-reversePlus[posOrder]
 	out<-data.frame(
 		'start'=pos[-length(pos)],
 		'end'=pos[-1]-1,
@@ -231,7 +232,17 @@ predictAmplificationsSingleStrand<-function(forwards,reverses,maxLength=30000,ge
 }
 
 #' @describeIn predictAmplificationsSingleStrand Calculate the expected amplifications across a genome for a set of forward and reverse primer binding sites for both strands
-predictAmplifications<-function(...){
+predictAmplifications<-function(forwards,reverses,maxLength=30000,genomeSize=max(c(forwards+maxLength-1,reverses))){
+	forwardPred<-predictAmplificationsSingleStrand(forwards,reverses,maxLength,genomeSize)
+	reversePred<-predictAmplificationsSingleStrand(genomeSize-reverses+1,genomeSize-forwards+1,maxLength,genomeSize)
+	tmp<-reversePred$start
+	reversePred$start<-genomeSize-reversePred$end+1
+	reversePred$end<-genomeSize-tmp+1
+	reversePred<-reversePred[nrow(reversePred):1,]
+	if(any(reversePred$start!=forwardPred$start|reversePred$end!=reversePred$end))stop(simpleError('Mismatch between forward and reverse predictions'))
+	out<-forwardPred[,c('start','end','amplifications')]
+	out$amplifications<-out$amplifications+reversePred$amplifications
+	return(out)
 }
 
 

@@ -8,7 +8,8 @@
 predictAmplificationsSingleStrand(forwards, reverses, maxLength = 30000,
   genomeSize = max(c(forwards + maxLength - 1, reverses)))
 
-predictAmplifications(...)
+predictAmplifications(forwards, reverses, maxLength = 30000,
+  genomeSize = max(c(forwards + maxLength - 1, reverses)))
 }
 \arguments{
 \item{forwards}{Leftmost positions of primer binding sites landing on the 5' strand (1-based)}
@@ -24,8 +25,8 @@ A data frame with columns:
      \describe{
        \item{start}{1-based start coordinate of region}
        \item{end}{1-based end coordinate of region}
-       \item{forwards}{number of forward primers spanning the region}
-       \item{reverses}{number of reverse primers spanning the region}
+       \item{forwards}{number of forward primers spanning the region (for predictAmplificationsSingleStrand)}
+       \item{reverses}{number of reverse primers spanning the region (for predictAmplificationsSingleStrand)}
        \item{amplifications}{expected amplifcations for the region}
      }
 }
@@ -38,6 +39,7 @@ Calculate the expected amplifications across a genome for a set of forward and r
 }}
 \examples{
 predictAmplificationsSingleStrand(c(1,10,20),c(15,25,35),maxLength=40,genomeSize=45)
+predictAmplifications(c(1,10,20),c(15,25,35),maxLength=40,genomeSize=45)
 }
 \concept{
 multiple strand displacement amplification fragment prediction dynamic programming genome
