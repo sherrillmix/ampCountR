@@ -13,8 +13,8 @@
 #' @name ampCounter
 #' @seealso \url{https://en.wikipedia.org/wiki/Multiple_displacement_amplification}
 #' @examples
-#' forwards<-generateRandomPrimers(10000,100)
-#' reverses<-generateRandomPrimers(10000,100)
+#' forwards<-ampCounter:::generateRandomPrimers(10000,100)
+#' reverses<-ampCounter:::generateRandomPrimers(10000,100)
 #' plot(countAmplifications(forwards,reverses),type='l',xlab='Genome position',ylab='Amplifications')
 NULL
 
