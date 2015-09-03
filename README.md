@@ -18,6 +18,9 @@ The main functions are:
         forwards<-c(10,20,30)
         reverses<-c(50,60,70)
         frags<-enumerateAmplifications(forwards,reverses,expectedLength=120)
+        plotFrags(frags)
+        abline(v=forwards,lty=2,col='#FF000033')
+        abline(v=reverses,lty=2,col='#0000FF33')
     
     This generates predicted fragments of:
     ![Predicted fragments from 3 forward, 3 reverse primers](example3x3primers.png)
@@ -27,18 +30,11 @@ The main functions are:
 A more detailed example is given in example.R:
 ```R
 source('ampCounter.R')
-
 forwards<-generateRandomPrimers(1e6,10000)
-#+.5 to make sure we don't get any overlaps with forwards
 reverses<-generateRandomPrimers(1e6,10000)+.5
-
 frags<-enumerateAmplifications(forwards,reverses,vocal=TRUE)
 revFrags<-enumerateAmplifications(forwards,reverses,vocal=TRUE,strand='-')
-
-#+2 for original + and - strand
-cover<-countCover(c(frags$start,revFrags$start),c(frags$end,revFrags$end),vocal=TRUE)+2
 ```
 This generates an example predicted fold enrichments of:
 ![Example of fold enrichment predictions](predictedEnrichmentExample.png)
 
-The code does not currently try to account for the start and end of primer binding sites and just treats each primer as a single location. This would be an easy extension. Because of this, it is necessary to guarantee that no forward and reverse locations share the same location (e.g. by throwing out duplicates or adding a small amount, say .5, to the reverse primers).
