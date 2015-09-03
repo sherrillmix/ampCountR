@@ -5,26 +5,24 @@ devtools::install_github('sherrillmix/ampCounter')
 ```
 
 The main functions are:
-* <code>countAmplifications()</code> which can be used like:
+* <code>countAmplifications(x,y)</code> to count the number of amplifications predicted for a region with <code>x</code> upstream and <code>y</code> downstream primers (within range and correctly oriented). For example:
 
         countAmplifications(10,20)
 
-    to count the number of amplifications predicted for a region with 10 upstream and 20 downstream primers (all within range and correctly oriented).
+* <code>enumerateAmplifications()</code> to list the expected amplification products. For example:
+    
+        enumerateAmplifications(forwardPrimerLocations,reversePrimerLocations,vocal=TRUE)
+    
+    A simple example of 3 forward primers and 3 reverse primers is:
+    
+        forwards<-c(10,20,30)
+        reverses<-c(50,60,70)
+        frags<-enumerateAmplifications(forwards,reverses,expectedLength=120)
+    
+    This generates predicted fragments of:
+    ![Predicted fragments from 3 forward, 3 reverse primers](example3x3primers.png)
 
-To see the expected amplification products you can use <code>enumerateAmplifications()</code> which can be used like:
-```
-enumerateAmplifications(forwardPrimerLocations,reversePrimerLocations,vocal=TRUE)
-```
-A simple example of 3 forward primers and 3 reverse primers is:
-```
-forwards<-c(10,20,30)
-reverses<-c(50,60,70)
-frags<-enumerateAmplifications(forwards,reverses,expectedLength=120)
-```
-This generates predicted fragments of:
-![Predicted fragments from 3 forward, 3 reverse primers](example3x3primers.png)
-
-This function is slower than it needs to be since it uses recursion without dynamic programming.
+    This function is bit slow since it uses recursion without dynamic programming but <code>countAmplifications()</code> should handle any large sets.
 
 A more detailed example is given in example.R:
 ```R
