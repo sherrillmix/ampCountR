@@ -27,7 +27,7 @@ The main functions are:
 
     This function is bit slow since it uses recursion without dynamic programming but <code>countAmplifications()</code> should handle any large sets.
 
-A more detailed example is given in example.R:
+A longer example is given in example.R:
 ```R
 source('ampCounter.R')
 forwards<-generateRandomPrimers(1e6,10000)

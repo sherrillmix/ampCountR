@@ -31,7 +31,7 @@ A data frame with columns:
      }
 }
 \description{
-Calculate the expected amplifications across a genome for a set of forward and reverse primer binding sites used in strand displacement amplification
+Calculate the expected amplifications across a genome for a set of forward and reverse primer binding sites used in multiple strand displacement amplification
 }
 \section{Functions}{
 \itemize{
