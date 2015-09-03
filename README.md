@@ -6,8 +6,8 @@ devtools::install_github('sherrillmix/ampCounter')
 
 The main functions are:
 * <code>countAmplifications()</code> which can be used like:
-		countAmplifications(10,20)
-	to count the number of amplifications predicted for a region with 10 upstream and 20 downstream primers (all within range and correctly oriented).
+        countAmplifications(10,20)
+    to count the number of amplifications predicted for a region with 10 upstream and 20 downstream primers (all within range and correctly oriented).
 
 To see the expected amplification products you can use <code>enumerateAmplifications()</code> which can be used like:
 ```
