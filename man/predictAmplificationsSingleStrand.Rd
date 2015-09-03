@@ -3,7 +3,7 @@
 \name{predictAmplificationsSingleStrand}
 \alias{predictAmplifications}
 \alias{predictAmplificationsSingleStrand}
-\title{Calculate expected multiple strand displacement for a series of forwards and reverse primers for just the positive strand}
+\title{Calculate expected multiple strand displacement for a series of forwards and reverse primers}
 \usage{
 predictAmplificationsSingleStrand(forwards, reverses, maxLength = 30000,
   genomeSize = max(c(forwards + maxLength - 1, reverses)))
@@ -23,15 +23,15 @@ predictAmplifications(forwards, reverses, maxLength = 30000,
 \value{
 A data frame with columns:
      \describe{
-       \item{start}{1-based start coordinate of region}
-       \item{end}{1-based end coordinate of region}
-       \item{forwards}{number of forward primers spanning the region (for predictAmplificationsSingleStrand)}
-       \item{reverses}{number of reverse primers spanning the region (for predictAmplificationsSingleStrand)}
-       \item{amplifications}{expected amplifcations for the region}
+       \item{start:}{1-based start coordinate of region}
+       \item{end:}{1-based end coordinate of region}
+       \item{forwards:}{number of forward primers spanning the region (for predictAmplificationsSingleStrand)}
+       \item{reverses:}{number of reverse primers spanning the region (for predictAmplificationsSingleStrand)}
+       \item{amplifications:}{expected amplifcations for the region}
      }
 }
 \description{
-Calculate the expected amplifications across a genome for a set of forward and reverse primer binding sites for a single strand
+Calculate the expected amplifications across a genome for a set of forward and reverse primer binding sites used in strand displacement amplification
 }
 \section{Functions}{
 \itemize{

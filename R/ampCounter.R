@@ -182,9 +182,9 @@ countAmplifications<-function(nForwards,nReverses){
 	amplificationLookup[nForwards+1,nReverses+1]
 }
 
-#' Calculate expected multiple strand displacement for a series of forwards and reverse primers for just the positive strand
+#' Calculate expected multiple strand displacement for a series of forwards and reverse primers
 #' 
-#' Calculate the expected amplifications across a genome for a set of forward and reverse primer binding sites for a single strand
+#' Calculate the expected amplifications across a genome for a set of forward and reverse primer binding sites used in strand displacement amplification
 #'
 #' @param forwards Leftmost positions of primer binding sites landing on the 5' strand (1-based)
 #' @param reverses Rightmost positions of primer binding sites landing on the 3' strand (1-based)
@@ -193,11 +193,11 @@ countAmplifications<-function(nForwards,nReverses){
 #'
 #' @return A data frame with columns: 
 #'      \describe{
-#'        \item{start}{1-based start coordinate of region}
-#'        \item{end}{1-based end coordinate of region}
-#'        \item{forwards}{number of forward primers spanning the region (for predictAmplificationsSingleStrand)}
-#'        \item{reverses}{number of reverse primers spanning the region (for predictAmplificationsSingleStrand)}
-#'        \item{amplifications}{expected amplifcations for the region}
+#'        \item{start:}{1-based start coordinate of region}
+#'        \item{end:}{1-based end coordinate of region}
+#'        \item{forwards:}{number of forward primers spanning the region (for predictAmplificationsSingleStrand)}
+#'        \item{reverses:}{number of reverse primers spanning the region (for predictAmplificationsSingleStrand)}
+#'        \item{amplifications:}{expected amplifcations for the region}
 #'      }
 #'
 #' @concept multiple strand displacement amplification fragment prediction dynamic programming genome
