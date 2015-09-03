@@ -232,6 +232,7 @@ predictAmplificationsSingleStrand<-function(forwards,reverses,maxLength=30000,ge
 }
 
 #' @describeIn predictAmplificationsSingleStrand Calculate the expected amplifications across a genome for a set of forward and reverse primer binding sites for both strands
+#' @export
 predictAmplifications<-function(forwards,reverses,maxLength=30000,genomeSize=max(c(forwards+maxLength-1,reverses))){
 	forwardPred<-predictAmplificationsSingleStrand(forwards,reverses,maxLength,genomeSize)
 	reversePred<-predictAmplificationsSingleStrand(genomeSize-reverses+1,genomeSize-forwards+1,maxLength,genomeSize)
