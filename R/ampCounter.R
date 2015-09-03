@@ -33,7 +33,6 @@ NULL
 #' @param reverses Sorted positions of primers landing sites on the reverse strand of the target sequence.
 #' @param strand "+" or "-" for indicating what strand the target sequence originates from. Note if starting with double stranded fragments then the function should be run once with "+" and once with "-" and the results concatenated.
 #' @param expectedLength The expected max length fragment the polymerase can generate in one run.
-#' @param minLength Discard fragments shorter than minLength (can help with run time if many short fragments are generated)
 #' @param maxTotalLength Discard fragments for which the sum of all the ancestors bases are longer than maxTotalLength. If the polymerase has some probability of falling off each base amplified then it becomes less and less likely to reach a deeply amplified product. Using maxTotalLength to end the recursion once a certain total length is reach can help with run time.
 #' @param vocal TRUE or FALSE Output progress?
 #' @param fragmentStart The 5' end of the current fragment (for use in recursion more than manually)
@@ -52,22 +51,22 @@ NULL
 #' 
 #' @examples
 #' enumerateAmplifications(c(10,20,30),c(40,50,60),expectedLength=45)
-enumerateAmplifications<-function(forwards,reverses,strand='+',expectedLength=50000,minLength=1,maxTotalLength=Inf,fragmentStart=1,fragmentEnd=Inf,baseName='',vocal=FALSE,previousLength=0){
+enumerateAmplifications<-function(forwards,reverses,strand='+',expectedLength=50000,maxTotalLength=Inf,fragmentStart=1,fragmentEnd=Inf,baseName='',vocal=FALSE,previousLength=0){
 	if(vocal&&runif(1)<.001)cat('.')
 	if(vocal&&runif(1)<.0001)cat(sprintf(' %d ',fragmentStart))
-	if(any(diff(forwards)<1)||any(diff(reverses)<1))stop(simpleError('Expects sorted primer positions')) #could handle ahead of time
+	if(any(diff(forwards)<1)||any(diff(reverses)<1))stop(simpleError('Expects sorted primer positions')) #force handle a head of time for speed
 	if(strand=='+'){
-		thisStarts<-forwards[forwards>=fragmentStart&forwards<=fragmentEnd] #ignores primer length for now
+		thisStarts<-forwards[forwards>=fragmentStart&forwards<=fragmentEnd] 
 		if(length(thisStarts)==0)return(NULL)
-		thisEnds<-thisStarts+expectedLength
+		thisEnds<-thisStarts+expectedLength-1
 		thisEnds[thisEnds>=fragmentEnd]<-fragmentEnd
-		isTerminal<-diff(c(-Inf,thisStarts))>expectedLength
+		isTerminal<-diff(c(-Inf,thisStarts))+1>expectedLength
 	}else{
-		thisEnds<-reverses[reverses>=fragmentStart&reverses<=fragmentEnd] #ignores primer length for now
+		thisEnds<-reverses[reverses>=fragmentStart&reverses<=fragmentEnd] 
 		if(length(thisEnds)==0)return(NULL)
-		thisStarts<-thisEnds-expectedLength
+		thisStarts<-thisEnds-expectedLength+1
 		thisStarts[thisStarts<=fragmentStart]<-fragmentStart
-		isTerminal<-diff(c(thisEnds,Inf))> expectedLength
+		isTerminal<-diff(c(thisEnds,Inf))+1> expectedLength
 	}
 	nFrags<-length(thisStarts)
 	nDigits<-ceiling(log10(nFrags+1))
@@ -81,8 +80,6 @@ enumerateAmplifications<-function(forwards,reverses,strand='+',expectedLength=50
 		'length'=thisEnds-thisStarts+1,
 		stringsAsFactors=FALSE
 	)
-	#filter out shorts
-	out<-out[out$length>=minLength,]
 	#terminate fragments with too many amplifications to have much weight
 	isTerminal<-isTerminal|out$previousLength+out$length>=maxTotalLength
 	if(any(!isTerminal)){
