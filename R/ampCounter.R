@@ -6,16 +6,19 @@
 #'      \describe{
 #'        \item{\code{\link{countAmplifications}}:}{to predict the number of amplifications for a single region}
 #'        \item{\code{\link{predictAmplifications}}:}{to predict the number of amplifications across a whole genome}
-#'        \item{\code{\link{predictAmplifications}}:}{to generate the predicted fragments for small sets of primers}
+#'        \item{\code{\link{enumerateAmplifications}}:}{to generate the predicted fragments for small sets of primers}
 #'      }
 ##'
 #' @docType package
 #' @name ampCounter
 #' @seealso \url{https://en.wikipedia.org/wiki/Multiple_displacement_amplification}
 #' @examples
-#' forwards<-ampCounter:::generateRandomPrimers(10000,100)
-#' reverses<-ampCounter:::generateRandomPrimers(10000,100)
-#' plot(countAmplifications(forwards,reverses),type='l',xlab='Genome position',ylab='Amplifications')
+#' forwards<-ampCounter:::generateRandomPrimers(100000,1000)
+#' reverses<-ampCounter:::generateRandomPrimers(100000,1000)
+#' amplifications<-predictAmplifications(forwards,reverses,maxLength=10000)
+#' 
+#' plot(1,1,type='n',xlim=c(1,max(amplifications$end)),ylim=c(1,max(amplifications)),xlab='Genome position',ylab='Amplifications',log='y')
+#' segments(amplifications$start,amplifications$amplification,amplifications$end,amplifications$amplification)
 NULL
 
 #' Enumerate the multiple strand displacement fragments generated given a set of primers
