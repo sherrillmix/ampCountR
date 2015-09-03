@@ -16,9 +16,11 @@
 #' forwards<-ampCounter:::generateRandomPrimers(100000,1000)
 #' reverses<-ampCounter:::generateRandomPrimers(100000,1000)
 #' amplifications<-predictAmplifications(forwards,reverses,maxLength=10000)
-#' 
 #' plot(1,1,type='n',xlim=c(1,max(amplifications$end)),ylim=c(1,max(amplifications)),xlab='Genome position',ylab='Amplifications',log='y')
 #' segments(amplifications$start,amplifications$amplification,amplifications$end,amplifications$amplification)
+#'
+#' frags<-enumerateAmplifications(c(10,20,30),c(15,25,35),expectedLength=40)
+#' plotFrags(frags)
 NULL
 
 #' Enumerate the multiple strand displacement fragments generated given a set of primers
@@ -49,7 +51,7 @@ NULL
 #' @export
 #' 
 #' @examples
-#' enumerateAmplifications(c(10,20,30),c(40,50,60))
+#' enumerateAmplifications(c(10,20,30),c(40,50,60),expectedLength=45)
 enumerateAmplifications<-function(forwards,reverses,strand='+',expectedLength=50000,minLength=1,maxTotalLength=Inf,fragmentStart=1,fragmentEnd=Inf,baseName='',vocal=FALSE,previousLength=0){
 	if(vocal&&runif(1)<.001)cat('.')
 	if(vocal&&runif(1)<.0001)cat(sprintf(' %d ',fragmentStart))
@@ -85,7 +87,7 @@ enumerateAmplifications<-function(forwards,reverses,strand='+',expectedLength=50
 	isTerminal<-isTerminal|out$previousLength+out$length>=maxTotalLength
 	if(any(!isTerminal)){
 		daughters<-do.call(rbind,mapply(function(start,end,name){
-			countAmplifications(forwards, reverses, strand=ifelse(strand=='+','-','+'), start, end, expectedLength=expectedLength, baseName=name,vocal=vocal,previousLength=previousLength+end-start+1,maxTotalLength=maxTotalLength)
+			enumerateAmplifications(forwards, reverses, strand=ifelse(strand=='+','-','+'), start, end, expectedLength=expectedLength, baseName=name,vocal=vocal,previousLength=previousLength+end-start+1,maxTotalLength=maxTotalLength)
 		},
 		out[!isTerminal,'start'],out[!isTerminal,'end'],out[!isTerminal,'name'],SIMPLIFY=FALSE))
 		out<-rbind(out,daughters)
