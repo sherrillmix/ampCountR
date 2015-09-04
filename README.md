@@ -4,6 +4,8 @@ Some R functions to count the expected amplifications for genomic regions given 
 devtools::install_github('sherrillmix/ampCounter')
 ```
 
+The package assumes that forward primer binding sites (primers matching the genomic plus strand) are represented by their leftmost (5'-most in the genomic plus strand) base position and reverse primer binding sites (primers matching the genomic minus strand) are represented by their rightmost (3'-most in the genomic plus strand) base position.
+
 The main functions are:
 * <code>countAmplifications(x,y)</code> to count the number of amplifications predicted for a region with <code>x</code> upstream and <code>y</code> downstream primers (within range and correctly oriented). For example:
 

@@ -9,9 +9,9 @@ enumerateAmplifications(forwards, reverses, strand = "+", maxLength = 50000,
   fragmentEnd = Inf, baseName = "", vocal = FALSE, previousLength = 0)
 }
 \arguments{
-\item{forwards}{Sorted positions of primers landing sites on the forward strand of the target sequence.}
+\item{forwards}{Sorted positions of the start of the primers landing sites on the forward strand of the target sequence (5'-most base in the genome plus strand)}
 
-\item{reverses}{Sorted positions of primers landing sites on the reverse strand of the target sequence.}
+\item{reverses}{Sorted positions of the end of the primers landing sites on the reverse strand of the target sequence (3'-most base in the genome plus strand)}
 
 \item{strand}{"+" or "-" for indicating what strand the target sequence originates from. Note if starting with double stranded fragments then the function should be run once with "+" and once with "-" and the results concatenated.}
 
