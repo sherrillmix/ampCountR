@@ -11,13 +11,15 @@ The main functions are:
 
 * <code>enumerateAmplifications()</code> to list the expected amplification products. For example:
     
-        enumerateAmplifications(forwardPrimerLocations,reversePrimerLocations,vocal=TRUE)
+		  forwards<-c(1,11,21)
+		  reverses<-c(25,35,45)
+        enumerateAmplifications(forwards,reverses,maxLength=50)
     
     A simple example of 3 forward primers and 3 reverse primers is:
     
         forwards<-c(10,20,30)
         reverses<-c(50,60,70)
-        frags<-enumerateAmplifications(forwards,reverses,expectedLength=120)
+        frags<-enumerateAmplifications(forwards,reverses,maxLength=120)
         plotFrags(frags)
         abline(v=forwards,lty=2,col='#FF000033')
         abline(v=reverses,lty=2,col='#0000FF33')
@@ -26,6 +28,15 @@ The main functions are:
     ![Predicted fragments from 3 forward, 3 reverse primers](example3x3primers.png)
 
     This function is bit slow since it uses recursion without dynamic programming but <code>countAmplifications()</code> should easily handle any large sets.
+
+* <code>predictAmplifications()</code> to list the expected amplification products over a genome given primer binding sites on the forward and reverse strand. For example:
+
+		  forwards<-c(1,11,21)
+		  reverses<-c(25,35,45)
+        predictAmplifications(forwards,reverses,maxLength=50)
+
+
+
 
 A longer example (also accessible from <code>example(ampCounter)</code>:
 ```R
@@ -44,4 +55,5 @@ abline(v=reverses,col='#0000FF44',lty=2)
 ```
 This generates an example predicted fold enrichments of:
 ![Example of fold enrichment predictions](predictedEnrichmentExample.png)
+See [generatePlots.R](generatePlots.R) for complete plotting details.
 

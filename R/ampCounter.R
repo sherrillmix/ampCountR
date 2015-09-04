@@ -25,7 +25,7 @@
 #' abline(v=forwards,col='#FF000044',lty=2)
 #' abline(v=reverses,col='#0000FF44',lty=2)
 #'
-#' frags<-enumerateAmplifications(c(10,20,30),c(15,25,35),expectedLength=40)
+#' frags<-enumerateAmplifications(c(10,20,30),c(15,25,35),maxLength=40)
 #' plotFrags(frags)
 NULL
 
@@ -38,7 +38,7 @@ NULL
 #' @param forwards Sorted positions of primers landing sites on the forward strand of the target sequence.
 #' @param reverses Sorted positions of primers landing sites on the reverse strand of the target sequence.
 #' @param strand "+" or "-" for indicating what strand the target sequence originates from. Note if starting with double stranded fragments then the function should be run once with "+" and once with "-" and the results concatenated.
-#' @param expectedLength The expected max length fragment the polymerase can generate in one run.
+#' @param maxLength The expected max length fragment the polymerase can generate in one run.
 #' @param minLength Discard fragments shorter than minLength (can help with run time if many short fragments are generated)
 #' @param maxTotalLength Discard fragments for which the sum of all the ancestors bases are longer than maxTotalLength. If the polymerase has some probability of falling off each base amplified then it becomes less and less likely to reach a deeply amplified product. Using maxTotalLength to end the recursion once a certain total length is reach can help with run time.
 #' @param vocal TRUE or FALSE Output progress?
@@ -56,8 +56,8 @@ NULL
 #' @export
 #' 
 #' @examples
-#' enumerateAmplifications(c(10,20,30),c(40,50,60),expectedLength=45)
-enumerateAmplifications<-function(forwards,reverses,strand='+',expectedLength=50000,minLength=1,maxTotalLength=Inf,fragmentStart=1,fragmentEnd=Inf,baseName='',vocal=FALSE,previousLength=0){
+#' enumerateAmplifications(c(10,20,30),c(40,50,60),maxLength=45)
+enumerateAmplifications<-function(forwards,reverses,strand='+',maxLength=50000,minLength=1,maxTotalLength=Inf,fragmentStart=1,fragmentEnd=Inf,baseName='',vocal=FALSE,previousLength=0){
 	if(vocal&&runif(1)<.001)cat('.')
 	if(vocal&&runif(1)<.0001)cat(sprintf(' %d ',fragmentStart))
 	if(any(diff(forwards)<1))forwards<-sort(forwards)
@@ -65,15 +65,15 @@ enumerateAmplifications<-function(forwards,reverses,strand='+',expectedLength=50
 	if(strand=='+'){
 		thisStarts<-forwards[forwards>=fragmentStart&forwards<=fragmentEnd] 
 		if(length(thisStarts)==0)return(NULL)
-		thisEnds<-thisStarts+expectedLength-1
+		thisEnds<-thisStarts+maxLength-1
 		thisEnds[thisEnds>=fragmentEnd]<-fragmentEnd
-		isTerminal<-diff(c(-Inf,thisStarts))+1>expectedLength
+		isTerminal<-diff(c(-Inf,thisStarts))+1>maxLength
 	}else{
 		thisEnds<-reverses[reverses>=fragmentStart&reverses<=fragmentEnd] 
 		if(length(thisEnds)==0)return(NULL)
-		thisStarts<-thisEnds-expectedLength+1
+		thisStarts<-thisEnds-maxLength+1
 		thisStarts[thisStarts<=fragmentStart]<-fragmentStart
-		isTerminal<-diff(c(thisEnds,Inf))+1> expectedLength
+		isTerminal<-diff(c(thisEnds,Inf))+1> maxLength
 	}
 	nFrags<-length(thisStarts)
 	nDigits<-ceiling(log10(nFrags+1))
@@ -93,7 +93,7 @@ enumerateAmplifications<-function(forwards,reverses,strand='+',expectedLength=50
 	isTerminal<-isTerminal|out$previousLength+out$length>=maxTotalLength
 	if(any(!isTerminal)){
 		daughters<-do.call(rbind,mapply(function(start,end,name){
-			enumerateAmplifications(forwards, reverses, strand=ifelse(strand=='+','-','+'), start, end, expectedLength=expectedLength, baseName=name,vocal=vocal,previousLength=previousLength+end-start+1,maxTotalLength=maxTotalLength,minLength=minLength)
+			enumerateAmplifications(forwards, reverses, strand=ifelse(strand=='+','-','+'), start, end, maxLength=maxLength, baseName=name,vocal=vocal,previousLength=previousLength+end-start+1,maxTotalLength=maxTotalLength,minLength=minLength)
 		},
 		out[!isTerminal,'start'],out[!isTerminal,'end'],out[!isTerminal,'name'],SIMPLIFY=FALSE))
 		out<-rbind(out,daughters)

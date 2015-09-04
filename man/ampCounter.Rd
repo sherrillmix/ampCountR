@@ -23,8 +23,12 @@ amps<-predictAmplifications(forwards,reverses,maxLength=10000)
 plot(1,1,type='n',xlim=c(1,100000),ylim=c(1,max(amps)),
      xlab='Position',ylab='Amplifications',log='y')
 segments(amps$start,amps$amplification,amps$end,amps$amplification)
+segments(amps$end[-nrow(amps)],amps$amplification[-nrow(amps)],
+         amps$start[-1],amps$amplification[-1])
+abline(v=forwards,col='#FF000044',lty=2)
+abline(v=reverses,col='#0000FF44',lty=2)
 
-frags<-enumerateAmplifications(c(10,20,30),c(15,25,35),expectedLength=40)
+frags<-enumerateAmplifications(c(10,20,30),c(15,25,35),maxLength=40)
 plotFrags(frags)
 }
 \author{
