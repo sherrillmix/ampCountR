@@ -1,5 +1,7 @@
 library(ampCounter)
 
+set.seed(12345)
+
 genomeSize<-1e5
 maxLength<-10000 #maximum amplification length expected from polymerase
 primerFrequency<-2500 #primer binding site average 1 per 2500 bases
