@@ -25,15 +25,22 @@ The main functions are:
     This generates predicted fragments of:
     ![Predicted fragments from 3 forward, 3 reverse primers](example3x3primers.png)
 
-    This function is bit slow since it uses recursion without dynamic programming but <code>countAmplifications()</code> should handle any large sets.
+    This function is bit slow since it uses recursion without dynamic programming but <code>countAmplifications()</code> should easily handle any large sets.
 
-A longer example is given in example.R:
+A longer example (also accessible from <code>example(ampCounter)</code>:
 ```R
-source('ampCounter.R')
-forwards<-generateRandomPrimers(1e6,10000)
-reverses<-generateRandomPrimers(1e6,10000)+.5
-frags<-enumerateAmplifications(forwards,reverses,vocal=TRUE)
-revFrags<-enumerateAmplifications(forwards,reverses,vocal=TRUE,strand='-')
+devtools::install_github('sherrillmix/ampCounter')
+library(ampCounter)
+forwards<-ampCounter:::generateRandomPrimers(100000,1000)
+reverses<-ampCounter:::generateRandomPrimers(100000,1000)
+amps<-predictAmplifications(forwards,reverses,maxLength=10000)
+par(mar=c(3.5,3.5,.2,.2))
+plot(1,1,type='n',xlim=c(1,100000),ylim=c(1,max(amps)),
+     xlab='Position',ylab='Amplifications',log='y')
+segments(amps$start,amps$amplification,amps$end,amps$amplification)
+segments(amps$end[-nrow(amps)],amps$amplification[-nrow(amps)],amps$start[-1],amps$amplification[-1])
+abline(v=forwards,col='#FF000044',lty=2)
+abline(v=reverses,col='#0000FF44',lty=2)
 ```
 This generates an example predicted fold enrichments of:
 ![Example of fold enrichment predictions](predictedEnrichmentExample.png)

@@ -1,4 +1,7 @@
-all: docs package
+all: docs package plots
+
+plots: generatePlots.R
+	Rscript generatePlots.R
 
 docs: R/*.R
 	R -e 'devtools::document()'
