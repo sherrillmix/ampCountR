@@ -11,8 +11,8 @@ The main functions are:
 
 * <code>enumerateAmplifications()</code> to list the expected amplification products. For example:
     
-		  forwards<-c(1,11,21)
-		  reverses<-c(25,35,45)
+        forwards<-c(1,11,21)
+        reverses<-c(25,35,45)
         enumerateAmplifications(forwards,reverses,maxLength=50)
     
     A simple example of 3 forward primers and 3 reverse primers is:
@@ -31,8 +31,8 @@ The main functions are:
 
 * <code>predictAmplifications()</code> to list the expected amplification products over a genome given primer binding sites on the forward and reverse strand. For example:
 
-		  forwards<-c(1,11,21)
-		  reverses<-c(25,35,45)
+        forwards<-c(1,11,21)
+        reverses<-c(25,35,45)
         predictAmplifications(forwards,reverses,maxLength=50)
 
 
