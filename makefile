@@ -1,5 +1,8 @@
 all: docs package plots
 
+install:
+	R -e 'devtools::install_github("sherrillmix/ampCounter")'
+
 plots: generatePlots.R
 	Rscript generatePlots.R
 
