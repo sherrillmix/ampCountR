@@ -11,13 +11,15 @@
 ##'
 #' @docType package
 #' @name ampCounter
-#' @seealso \url{https://en.wikipedia.org/wiki/Multiple_displacement_amplification}
+#' @references \url{https://en.wikipedia.org/wiki/Multiple_displacement_amplification}
+#' @author Scott Sherrill-Mix, \email{shescott@@upenn.edu}
 #' @examples
 #' forwards<-ampCounter:::generateRandomPrimers(100000,1000)
 #' reverses<-ampCounter:::generateRandomPrimers(100000,1000)
-#' amplifications<-predictAmplifications(forwards,reverses,maxLength=10000)
-#' plot(1,1,type='n',xlim=c(1,max(amplifications$end)),ylim=c(1,max(amplifications)),xlab='Genome position',ylab='Amplifications',log='y')
-#' segments(amplifications$start,amplifications$amplification,amplifications$end,amplifications$amplification)
+#' amps<-predictAmplifications(forwards,reverses,maxLength=10000)
+#' plot(1,1,type='n',xlim=c(1,100000),ylim=c(1,max(amps)),
+#'      xlab='Position',ylab='Amplifications',log='y')
+#' segments(amps$start,amps$amplification,amps$end,amps$amplification)
 #'
 #' frags<-enumerateAmplifications(c(10,20,30),c(15,25,35),expectedLength=40)
 #' plotFrags(frags)
@@ -33,6 +35,7 @@ NULL
 #' @param reverses Sorted positions of primers landing sites on the reverse strand of the target sequence.
 #' @param strand "+" or "-" for indicating what strand the target sequence originates from. Note if starting with double stranded fragments then the function should be run once with "+" and once with "-" and the results concatenated.
 #' @param expectedLength The expected max length fragment the polymerase can generate in one run.
+#' @param minLength Discard fragments shorter than minLength (can help with run time if many short fragments are generated)
 #' @param maxTotalLength Discard fragments for which the sum of all the ancestors bases are longer than maxTotalLength. If the polymerase has some probability of falling off each base amplified then it becomes less and less likely to reach a deeply amplified product. Using maxTotalLength to end the recursion once a certain total length is reach can help with run time.
 #' @param vocal TRUE or FALSE Output progress?
 #' @param fragmentStart The 5' end of the current fragment (for use in recursion more than manually)
@@ -40,21 +43,21 @@ NULL
 #' @param baseName Prefix for tracking fragment ancestors (for use in recursion more than manually)
 #' @param previousLength How many bases need to be amplified to reach this fragment (for use in recursion more than manually)
 #'
-#' @return A data frame with columns start, end, strand, name, previousLength and length. Start and end and strand are the positions of 5' and 3' end on the appropriate strand of the target sequence. Name is a concatenation of the ancestors of that fragment. Previous length is the sum of the fragment lengths of the ancestors of this fragment. Length is the width of this fragment.
+#' @return A data frame with columns start, end, strand, name, previousLength and length. Start and end and strand are the positions of 5' and 3' end on the appropriate strand of the target sequence. Name is a concatenation of the ancestors of that fragment. Previous length is the sum of the fragment lengths of the ancestors of this fragment. Length is the width of this fragment. Returns NULL if no amplifications.
 #'
-#' @concept multiple strand displacement amplification fragment prediction recursive recursion
-#'
-#' @seealso \url{https://en.wikipedia.org/wiki/Multiple_displacement_amplification}
+#' @concept multiple strand displacement amplification fragment prediction recursive recursion #'
+#' @references \url{https://en.wikipedia.org/wiki/Multiple_displacement_amplification}
 #' @seealso \code{\link{countAmplifications}}
 #'
 #' @export
 #' 
 #' @examples
 #' enumerateAmplifications(c(10,20,30),c(40,50,60),expectedLength=45)
-enumerateAmplifications<-function(forwards,reverses,strand='+',expectedLength=50000,maxTotalLength=Inf,fragmentStart=1,fragmentEnd=Inf,baseName='',vocal=FALSE,previousLength=0){
+enumerateAmplifications<-function(forwards,reverses,strand='+',expectedLength=50000,minLength=1,maxTotalLength=Inf,fragmentStart=1,fragmentEnd=Inf,baseName='',vocal=FALSE,previousLength=0){
 	if(vocal&&runif(1)<.001)cat('.')
 	if(vocal&&runif(1)<.0001)cat(sprintf(' %d ',fragmentStart))
-	if(any(diff(forwards)<1)||any(diff(reverses)<1))stop(simpleError('Expects sorted primer positions')) #force handle a head of time for speed
+	if(any(diff(forwards)<1))forwards<-sort(forwards)
+	if(any(diff(reverses)<1))reverses<-sort(reverses)
 	if(strand=='+'){
 		thisStarts<-forwards[forwards>=fragmentStart&forwards<=fragmentEnd] 
 		if(length(thisStarts)==0)return(NULL)
@@ -80,11 +83,13 @@ enumerateAmplifications<-function(forwards,reverses,strand='+',expectedLength=50
 		'length'=thisEnds-thisStarts+1,
 		stringsAsFactors=FALSE
 	)
+	#filter out shorts
+	out<-out[out$length>=minLength,]
 	#terminate fragments with too many amplifications to have much weight
 	isTerminal<-isTerminal|out$previousLength+out$length>=maxTotalLength
 	if(any(!isTerminal)){
 		daughters<-do.call(rbind,mapply(function(start,end,name){
-			enumerateAmplifications(forwards, reverses, strand=ifelse(strand=='+','-','+'), start, end, expectedLength=expectedLength, baseName=name,vocal=vocal,previousLength=previousLength+end-start+1,maxTotalLength=maxTotalLength)
+			enumerateAmplifications(forwards, reverses, strand=ifelse(strand=='+','-','+'), start, end, expectedLength=expectedLength, baseName=name,vocal=vocal,previousLength=previousLength+end-start+1,maxTotalLength=maxTotalLength,minLength=minLength)
 		},
 		out[!isTerminal,'start'],out[!isTerminal,'end'],out[!isTerminal,'name'],SIMPLIFY=FALSE))
 		out<-rbind(out,daughters)
@@ -131,7 +136,7 @@ plotFrags<-function(frags,label=TRUE){
 #' @keywords internal
 #'
 #' @examples
-#' generateRandomPrimers(10000,100)
+#' ampCounter:::generateRandomPrimers(10000,100)
 generateRandomPrimers<-function(genomeSize,frequency){
 	nPrimers<-round(genomeSize/frequency)
 	out<-unique(sort(ceiling(runif(nPrimers,1,genomeSize))))
@@ -194,7 +199,7 @@ generateAmplificationTable<-function(nForwards=10,nReverses=10){
 countAmplifications<-function(nForwards,nReverses){
 	if(nForwards>1000)stop(simpleError(sprintf('To avoid a large lookup table countAmplifications limited to less than 1000 forward primers. Maybe use generateAmplificationTable(%d,%d) directly',nForwards,nReverses)))
 	if(nReverses>1000)stop(simpleError(sprintf('To avoid a large lookup table countAmplifications limited to less than 1000 reverse primers. Maybe use generateAmplificationTable(%d,%d) directly',nForwards,nReverses)))
-	amplificationLookup[nForwards+1,nReverses+1]
+	ampCounter::amplificationLookup[nForwards+1,nReverses+1]
 }
 
 #' Calculate expected multiple strand displacement for a series of forwards and reverse primers

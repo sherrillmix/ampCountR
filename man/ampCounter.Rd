@@ -19,12 +19,18 @@ The main functions are:
 \examples{
 forwards<-ampCounter:::generateRandomPrimers(100000,1000)
 reverses<-ampCounter:::generateRandomPrimers(100000,1000)
-amplifications<-predictAmplifications(forwards,reverses,maxLength=10000)
+amps<-predictAmplifications(forwards,reverses,maxLength=10000)
+plot(1,1,type='n',xlim=c(1,100000),ylim=c(1,max(amps)),
+     xlab='Position',ylab='Amplifications',log='y')
+segments(amps$start,amps$amplification,amps$end,amps$amplification)
 
-plot(1,1,type='n',xlim=c(1,max(amplifications$end)),ylim=c(1,max(amplifications)),xlab='Genome position',ylab='Amplifications',log='y')
-segments(amplifications$start,amplifications$amplification,amplifications$end,amplifications$amplification)
+frags<-enumerateAmplifications(c(10,20,30),c(15,25,35),expectedLength=40)
+plotFrags(frags)
 }
-\seealso{
+\author{
+Scott Sherrill-Mix, \email{shescott@upenn.edu}
+}
+\references{
 \url{https://en.wikipedia.org/wiki/Multiple_displacement_amplification}
 }
 
