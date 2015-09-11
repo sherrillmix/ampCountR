@@ -1,5 +1,5 @@
 library(ampCounter)
-context("DNA basics")
+context("Amplification counting")
 test_that("Test amplification table",{
 	expect_that(amplificationLookup[1,1], equals(0))
 	expect_that(amplificationLookup[1,2], equals(0))
