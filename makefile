@@ -20,6 +20,9 @@ inst/doc: vignettes/*.Rnw
 	R -e 'devtools::build_vignettes()'
 	touch inst/doc
 
-package: docs R/*.R DESCRIPTION
-$(PACKAGEFILE): man R/*.R DESCRIPTION tests/testthat/tests.R inst/doc
+data: data-raw/makeAmpliciationLookup.R
+	Rscript data-raw/makeAmpliciationLookup.R
+	touch data
+
+$(PACKAGEFILE): man R/*.R DESCRIPTION tests/testthat/tests.R inst/doc data
 	R -e 'devtools::check();devtools::build()'

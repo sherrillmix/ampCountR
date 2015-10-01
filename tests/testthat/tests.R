@@ -17,8 +17,7 @@ test_that("Test countAmplifications",{
 	expect_that(countAmplifications(20,0), equals(20))
 	expect_that(countAmplifications(3,3), equals(19))
 	expect_that(countAmplifications(2,2), equals(5))
-	expect_that(countAmplifications(1000,1000), equals(Inf)) #not really a desired outcome but not worth dealing with arbitrary precision
-	expect_that(countAmplifications(1001,1001), throws_error()) #not really a desired outcome but have to cut somewhere
+	expect_that(countAmplifications(301,301), throws_error("limited to"))  #not really a desired outcome but have to cut somewhere
 })
 
 test_that("Test enumerateAmplifications",{
@@ -46,11 +45,13 @@ test_that("Test predictAmplifications",{
 	expect_that(nrow(predictAmplifications(1,c())), equals(1))
 	expect_that(nrow(predictAmplifications(c(),1)), equals(1))
 	expect_that(nrow(predictAmplifications(1:100,c())), equals(199))
-	expect_that(nrow(predictAmplifications(c(),1e6+1:100,1000)), equals(199))
+	expect_that(nrow(predictAmplifications(c(),1e6+1:100,100)), equals(199))
 	expect_that(max(predictAmplifications(c(),1)$amplification), equals(1))
 	expect_that(max(predictAmplifications(1,c())$amplification), equals(1))
 	expect_that(max(predictAmplifications(c(),1:100)$amplification), equals(100))
 	expect_that(max(predictAmplifications(1:100,c())$amplification), equals(100))
+	expect_that(max(predictAmplifications(1:500,c())$amplification), throws_error("limited to"))
+	expect_that(max(predictAmplifications(c(),1:500)$amplification), throws_error("limited to"))
 })
 
 test_that("Test consistency",{
