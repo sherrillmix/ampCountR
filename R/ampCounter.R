@@ -10,12 +10,12 @@
 #'      }
 ##'
 #' @docType package
-#' @name ampCounter
+#' @name ampCountR
 #' @references \url{https://en.wikipedia.org/wiki/Multiple_displacement_amplification}
 #' @author Scott Sherrill-Mix, \email{shescott@@upenn.edu}
 #' @examples
-#' forwards<-ampCounter:::generateRandomPrimers(100000,1000)
-#' reverses<-ampCounter:::generateRandomPrimers(100000,1000)
+#' forwards<-ampCountR:::generateRandomPrimers(100000,1000)
+#' reverses<-ampCountR:::generateRandomPrimers(100000,1000)
 #' amps<-predictAmplifications(forwards,reverses,maxLength=10000)
 #' plot(1,1,type='n',xlim=c(1,100000),ylim=c(1,max(amps)),
 #'      xlab='Position',ylab='Amplifications',log='y')
@@ -140,7 +140,7 @@ plotFrags<-function(frags,label=TRUE){
 #' @keywords internal
 #'
 #' @examples
-#' ampCounter:::generateRandomPrimers(10000,100)
+#' ampCountR:::generateRandomPrimers(10000,100)
 generateRandomPrimers<-function(genomeSize,frequency){
 	nPrimers<-round(genomeSize/frequency)
 	out<-unique(sort(ceiling(runif(nPrimers,1,genomeSize))))
@@ -203,7 +203,7 @@ generateAmplificationTable<-function(nForwards=10,nReverses=10){
 countAmplifications<-function(nForwards,nReverses){
 	if(nForwards>1000)stop(simpleError(sprintf('To avoid a large lookup table countAmplifications limited to less than 1000 forward primers. Maybe use generateAmplificationTable(%d,%d) directly',nForwards,nReverses)))
 	if(nReverses>1000)stop(simpleError(sprintf('To avoid a large lookup table countAmplifications limited to less than 1000 reverse primers. Maybe use generateAmplificationTable(%d,%d) directly',nForwards,nReverses)))
-	ampCounter::amplificationLookup[nForwards+1,nReverses+1]
+	ampCountR::amplificationLookup[nForwards+1,nReverses+1]
 }
 
 #' Calculate expected multiple strand displacement for a series of forwards and reverse primers

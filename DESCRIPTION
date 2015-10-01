@@ -1,6 +1,6 @@
-Package: ampCounter
+Package: ampCountR
 Type: Package
-Title: ampCounter: Predict amplification products of multiple strand displacement amplification
+Title: ampCountR: Predict amplification products of multiple strand displacement amplification
 Version: 0.2
 Date: 2015-09-03
 Author: Scott Sherrill-Mix
