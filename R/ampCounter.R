@@ -232,6 +232,8 @@ countAmplifications<-function(nForwards,nReverses){
 #' predictAmplificationsSingleStrand(c(1,10,20),c(15,25,35),maxLength=40,genomeSize=45)
 #' predictAmplifications(c(1,10,20),c(15,25,35),maxLength=40,genomeSize=45)
 predictAmplificationsSingleStrand<-function(forwards,reverses,maxLength=30000,genomeSize=max(c(forwards+maxLength-1,reverses))){
+	forwards<-unique(forwards)
+	reverses<-unique(reverses)
 	nForwards<-length(forwards)
 	nReverses<-length(reverses)
 	pos<-c(forwards,forwards+maxLength,reverses-maxLength+1,reverses+1) #forwards+maxLength not -1 because the drop should be on the base after last base of amplification
@@ -247,6 +249,10 @@ predictAmplificationsSingleStrand<-function(forwards,reverses,maxLength=30000,ge
 		'forwards'=cumsum(forwardPlus)[-length(pos)],
 		'reverses'=cumsum(reversePlus)[-length(pos)]
 	)
+	#fix where reverse primer ended and forward primer started at same pos
+	out$end<-apply(out[,c('start','end')],1,max)
+	#keep the last row when multiple events on single position (cumsums last contains completed counts for both)
+	out<-out[c(out$start[-nrow(out)]!=out$start[-1],TRUE),]
 	out<-out[out$end>=1&out$start<=genomeSize,]
 	#keep within genome boundaries
 	out[1,'start']<-max(1,out[1,'start'])

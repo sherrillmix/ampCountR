@@ -37,6 +37,9 @@ test_that("Test predictAmplificationsSingleStrand",{
 	expect_that(nrow(predictAmplificationsSingleStrand(1:100,c())), equals(199))
 	expect_that(max(predictAmplificationsSingleStrand(c(),1:100)$amplification), equals(0))
 	expect_that(max(predictAmplificationsSingleStrand(1,c())$amplification), equals(1))
+	expect_that(nrow(predictAmplificationsSingleStrand(1:3,4:6,3)), equals(6))
+	expect_that(nrow(predictAmplificationsSingleStrand(1,3,3)), equals(1))
+	expect_that(predictAmplificationsSingleStrand(1,3,3)$amplifications, equals(1))
 })
 
 test_that("Test predictAmplifications",{
@@ -52,6 +55,9 @@ test_that("Test predictAmplifications",{
 	expect_that(max(predictAmplifications(1:100,c())$amplification), equals(100))
 	expect_that(max(predictAmplifications(1:500,c())$amplification), throws_error("limited to"))
 	expect_that(max(predictAmplifications(c(),1:500)$amplification), throws_error("limited to"))
+	expect_that(nrow(predictAmplifications(1:3,4:6,3)), equals(6))
+	expect_that(nrow(predictAmplifications(1,3,3)), equals(1))
+	expect_that(predictAmplifications(1,3,3)$amplifications, equals(2))
 })
 
 test_that("Test consistency",{
