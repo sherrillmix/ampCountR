@@ -6,6 +6,8 @@ devtools::install_github('sherrillmix/ampCountR')
 
 The package assumes that forward primer binding sites (primers matching the genomic plus strand) are represented by their leftmost (5'-most in the genomic plus strand) base position and reverse primer binding sites (primers matching the genomic minus strand) are represented by their rightmost (3'-most in the genomic plus strand) base position.
 
+## Functions
+
 The main functions are:
 * <code>countAmplifications(x,y)</code> to count the number of amplifications predicted for a region with <code>x</code> upstream and <code>y</code> downstream primers (within range and correctly oriented). For example:
 
@@ -38,6 +40,7 @@ The main functions are:
         predictAmplifications(forwards,reverses,maxLength=50)
 
 
+## Example
 
 
 A longer example (also accessible from <code>example(ampCountR)</code>:
