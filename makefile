@@ -25,4 +25,5 @@ data: data-raw/makeAmpliciationLookup.R
 	touch data
 
 $(PACKAGEFILE): man R/*.R DESCRIPTION tests/testthat/tests.R inst/doc data
+	sed -i "s/^Date:.*$$/Date: `date +%Y-%m-%d`/" DESCRIPTION
 	R -e 'devtools::check();devtools::build()'
