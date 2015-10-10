@@ -281,8 +281,9 @@ predictAmplifications<-function(forwards,reverses,maxLength=30000,genomeSize=max
 #'
 #' A 301x301 matrix of predicted amplification for regions spanned by 0-300 primers
 #'
+#' @docType data
 #' @format A 301 row, 301 column matrix of the expected amplifications for each combination of 0-300
 #' forward and reverse primers spanning a region. Row 1 is for 0 forward primers within range, row 2 is for 1 forward primer,
 #' column 1 is for 0 reverse primers, column 2 is for 1 reverse primers ...
-#' @source generateAmplificationTable(1000,1000)
+#' @source generateAmplificationTable(300,300)
 "amplificationLookup"
