@@ -121,10 +121,13 @@ enumerateAmplifications<-function(forwards,reverses,strand='+',maxLength=50000,m
 #' frags<-enumerateAmplifications(c(10,20,30),c(40,50,60))
 #' plotFrags(frags)
 plotFrags<-function(frags,label=TRUE){
-	nFrags<-nrow(frags)
-	plot(1,1,type='n',xlim=range(frags[,c('start','end')]),ylim=c(1,nFrags)+c(-.5,.5),xlab='Genome position (nt)',ylab='Fragment',yaxs='i')
-	arrows(ifelse(frags$strand=='+',frags$start,frags$end),1:nFrags,ifelse(frags$strand=='+',frags$end,frags$start),1:nFrags,length=.02)
-	if(label)text(apply(frags[,c('start','end')],1,mean),1:nFrags,frags$name,col='#00000077',adj=c(0.5,0),cex=.6)
+	nFrags<-ifelse(is.null(frags),0,nrow(frags))
+	xlim<-c(min(frags$start,Inf),max(frags$end,-Inf))
+	if(xlim[1]==Inf)xlim[1]<-1
+	if(xlim[2]==-Inf)xlim[2]<-xlim[1]+1
+	plot(1,1,type='n',xlim=xlim,ylim=c(1,nFrags)+c(-.5,.5),xlab='Genome position (nt)',ylab='Fragment',yaxs='i')
+	if(nFrags>0)arrows(ifelse(frags$strand=='+',frags$start,frags$end),1:nFrags,ifelse(frags$strand=='+',frags$end,frags$start),1:nFrags,length=.02)
+	if(label&nFrags>0)text(apply(frags[,c('start','end')],1,mean),1:nFrags,frags$name,col='#00000077',adj=c(0.5,0),cex=.6)
 	return(NULL)
 }
 
