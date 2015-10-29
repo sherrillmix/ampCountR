@@ -2,3 +2,4 @@
 ^makefile$
 ^.*.png$
 ^generatePlots.R$
+^.travis.yml$
