@@ -77,3 +77,37 @@ test_that("Test consistency",{
 	expect_that(nrow(enumerateAmplifications(1:3,c())), equals(countAmplifications(3,0)))
 	expect_that(nrow(enumerateAmplifications(1,2:101)), equals(countAmplifications(1,100)))
 })
+
+test_that("Test generateAmplificationTable",{
+	expect_that(generateAmplificationTable(20,20)[4,4], equals(19))
+	expect_that(generateAmplificationTable(20,20)['3','3'], equals(19))
+	expect_that(generateAmplificationTable(44,53)['2','2'], equals(5))
+	expect_that(dim(generateAmplificationTable(100,100)), equals(c(101,101)))
+	expect_that(dim(generateAmplificationTable(100,50)), equals(c(101,51)))
+	expect_that(sum(generateAmplificationTable(100,50)[1,]), equals(0))
+	expect_that(sum(generateAmplificationTable(100,50)['0',]), equals(0))
+	expect_that(sum(generateAmplificationTable(100,50)['1',]), equals(51))
+	expect_that(rownames(generateAmplificationTable(100,50)), equals(as.character(0:100)))
+	expect_that(colnames(generateAmplificationTable(100,50)), equals(as.character(0:50)))
+	expect_that(sum(is.na(generateAmplificationTable(100,50))), equals(0))
+})
+
+test_that("Test generateRandomPrimers",{
+	expect_true(max(sapply(replicate(1000,ampCountR:::generateRandomPrimers(1000,20)),max))<=1000)
+	expect_true(min(sapply(replicate(1000,ampCountR:::generateRandomPrimers(1000,20)),min))>=1)
+	expect_true(abs(mean(sapply(replicate(1000,ampCountR:::generateRandomPrimers(1000,20)),length))-1000/20)<10) #not 100% guarantee but extremely rare
+	expect_true(abs(mean(sapply(replicate(1000,ampCountR:::generateRandomPrimers(5000,20)),length))-5000/20)<20) #not 100% guarantee but extremely rare
+	expect_true(min(sapply(replicate(1000,ampCountR:::generateRandomPrimers(5000,20)),length))>0) 
+})
+
+
+#kind of cheesy testing but I guess it should error if anything goes horribly wrong
+test_that("Test plotFrags",{
+  expect_true(is.null(plotFrags(enumerateAmplifications(c(10,20,30),c(40,50,60),maxLength=100))))
+  expect_true(is.null(plotFrags(enumerateAmplifications(c(1),c(2)))))
+  expect_true(is.null(plotFrags(enumerateAmplifications(c(1),c()))))
+  expect_true(is.null(plotFrags(enumerateAmplifications(c(1),c()),label=FALSE)))
+  expect_true(is.null(plotFrags(enumerateAmplifications(c(),c(1))))) #could throw an error here but if it's in a loop then better to give empty plot
+  expect_true(is.null(plotFrags(NULL))) #equivalent to the above
+  expect_true(is.null(plotFrags(enumerateAmplifications(c(1),c())[0,]))) #equivalent to the above
+})
