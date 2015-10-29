@@ -5,4 +5,4 @@ r_packages:
   - covr
 
 after_success:
-  - Rscript -e 'library(ampCountR); codecov()'
+  - Rscript -e 'library(covr); codecov()'
