@@ -4,8 +4,8 @@
 ### code chunk number 1: package
 ###################################################
 options(keep.source = TRUE, width = 60)
-packageInfo <- packageDescription("ampCountR")
-library(ampCountR)
+packageInfo <- packageDescription("ampcountr")
+library(ampcountr)
 packageKeywords<-"visualization, amplification, multiple strand displacement, primer design, estimation"
 
 

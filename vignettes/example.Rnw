@@ -3,21 +3,21 @@
 
 <<package,include=FALSE,echo=FALSE>>=
 options(keep.source = TRUE, width = 60)
-packageInfo <- packageDescription("ampCountR")
-library(ampCountR)
+packageInfo <- packageDescription("ampcountr")
+library(ampcountr)
 packageKeywords<-"visualization, amplification, multiple strand displacement, primer design, estimation"
 @
-%\VignetteIndexEntry{\Sexpr{packageInfo$Package} examples}
+%\VignetteIndexEntry{ampcountr examples}
 %\VignetteDepends{}
-%\VignetteKeywords{\Sexpr{packageKeywords}}
-%\VignettePackage{\Sexpr{packageInfo$Package}}
+%\VignetteKeywords{visualization, amplification, multiple strand displacement, primer design, estimation}
+%\VignettePackage{ampcountr}
 
 \title{\pkg{\Sexpr{packageInfo$Package}} package example (version \Sexpr{packageInfo$Version})}
 \author{\Sexpr{packageInfo$Author}}
 \Plainauthor{\Sexpr{packageInfo$Author}}
 
 \Address{
-  Github: \url{http://github.com/sherrillmix/ampCountR}
+  Github: \url{http://github.com/sherrillmix/ampcountr}
 }
 
 \Keywords{\Sexpr{packageKeywords}}
