@@ -1,3 +1,3 @@
 library(testthat)
-library(ampCountR)
-test_check("ampCountR")
+library(ampcountr)
+test_check("ampcountr")

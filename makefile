@@ -4,10 +4,13 @@ PACKAGEFILE:=../$(NAME)_$(VERSION).tar.gz
 
 all: $(PACKAGEFILE) README.md
 
-.PHONY: all install
+.PHONY: all install localInstall
 
 install:
 	R -e 'devtools::install_github("sherrillmix/$(NAME)")'
+
+localInstall:
+	R -e 'devtools::install()'
 
 plots: generatePlots.R
 	Rscript generatePlots.R
@@ -17,6 +20,7 @@ man: R/*.R
 	touch man
 
 inst/doc: vignettes/*.Rnw
+	make localInstall
 	R -e 'devtools::build_vignettes()'
 	touch inst/doc
 

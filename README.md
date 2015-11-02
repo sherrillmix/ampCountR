@@ -6,7 +6,7 @@
 
 Some R functions to count the expected amplifications for genomic regions given a set of primer binding locations for a [multiple displacement amplification](http://en.wikipedia.org/wiki/Multiple_displacement_amplification) reaction. To install directly from github, use the [<code>devtools</code>](https://github.com/hadley/devtools) library and run:
 ```
-devtools::install_github('sherrillmix/ampCountR')
+devtools::install_github('sherrillmix/ampcountr')
 ```
 
 The package assumes that forward primer binding sites (primers matching the genomic plus strand) are represented by their leftmost (5'-most in the genomic plus strand) base position and reverse primer binding sites (primers matching the genomic minus strand) are represented by their rightmost (3'-most in the genomic plus strand) base position.
@@ -48,12 +48,12 @@ The main functions are:
 ## Example
 
 
-A longer example (also accessible from <code>example(ampCountR)</code>:
+A longer example (also accessible from <code>example(ampcountr)</code>:
 ```R
-devtools::install_github('sherrillmix/ampCountR')
-library(ampCountR)
-forwards<-ampCountR:::generateRandomPrimers(100000,1000)
-reverses<-ampCountR:::generateRandomPrimers(100000,1000)
+devtools::install_github('sherrillmix/ampcountr')
+library(ampcountr)
+forwards<-ampcountr:::generateRandomPrimers(100000,1000)
+reverses<-ampcountr:::generateRandomPrimers(100000,1000)
 amps<-predictAmplifications(forwards,reverses,maxLength=10000)
 par(mar=c(3.5,3.5,.2,.2))
 plot(1,1,type='n',xlim=c(1,100000),ylim=c(1,max(amps)),

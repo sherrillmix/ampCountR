@@ -18,7 +18,7 @@ sorted list of positions
 Generate random position for primers. Mostly for internal testing and examples
 }
 \examples{
-ampCountR:::generateRandomPrimers(10000,100)
+ampcountr:::generateRandomPrimers(10000,100)
 }
 \keyword{internal}
 
