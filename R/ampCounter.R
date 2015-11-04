@@ -290,3 +290,51 @@ predictAmplifications<-function(forwards,reverses,maxLength=30000,genomeSize=max
 #' column 1 is for 0 reverse primers, column 2 is for 1 reverse primers ...
 #' @source generateAmplificationTable(300,300)
 "amplificationLookup"
+
+
+
+
+
+if(FALSE){
+enumerateAmplificationsSingleStrand<-function(forwards,reverses,maxLength=30000,genomeSize=max(c(forwards+maxLength-1,reverses))){
+	forwards<-unique(forwards)
+	reverses<-unique(reverses)
+	nForwards<-length(forwards)
+	nReverses<-length(reverses)
+  primers<-data.frame(
+    'start'=c(forwards,reverses-maxLength+1),
+    'end'=c(forwards+maxLength,reverses),
+    'type'=rep(c('forward','reverse'),c(nForwards,nReverses))
+  )
+  interesting<-data.frame(
+    'pos'=c(primers$start,primers$end),
+    'id'=c(1:nrow(primers),1:nrow(primers)),
+    'isStart'=rep(c(TRUE,FALSE),c(nrow(primers),nrow(primers)))
+  )
+  interesting<-interesting[order(interesting$pos),]
+  
+  currentForwardFrags<-outFrags<-currentReverseFrags<-data.frame('start'=0,'end'=0,'last'=TRUE)[0,]
+  activeForwards<-c()
+  activeReverses<-c()
+  for(ii in 1:nrow(interesting)){
+    thisId<-interesting[ii,'id']
+    thisPrimer<-primers[thisId,]
+    if(interesting[ii,'type']=='forward'){
+      if(thisPrimer$type=='forward')activeForwards<-c(activeForwards,thisId)
+      else activeReverses<-c(activeForwards,thisId)
+      next() #removed from active, now done with this primer
+    }
+    if(thisPrimer$type=='forward')currentForwardFrags<-rbind(currentForwardFrags,data.frame('start'=thisPrimer$start,'end'=thisPrimer$end,'last'=TRUE))
+      #else nothing since no forwards
+    }else{
+      if(thisPrimer$type=='forward')currentForwardFrags<-rbind(currentForwardFrags,data.frame('start'=thisPrimer$start,'end'=thisPrimer$end,'last'=TRUE))
+      
+    }
+
+    if(thisPrimer$type=='forward')activeForwards<-activeForwards[activeForwards!=thisId]
+    else activeReverses<-activeReverses[activeReverses!=thisId]
+    print(activeForwards)
+    print(activeReverses)
+  }
+}
+}
