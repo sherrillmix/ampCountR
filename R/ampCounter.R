@@ -46,6 +46,7 @@ NULL
 #' @param fragmentEnd The 3' end of the current fragment (for use in recursion more than manually)
 #' @param baseName Prefix for tracking fragment ancestors (for use in recursion more than manually)
 #' @param previousLength How many bases need to be amplified to reach this fragment (for use in recursion more than manually)
+#' @param fullGenome If TRUE then do not add the number of bases necessary to reach the primers to the previousLength (for use in recursion more than manually)
 #'
 #' @return A data frame with columns start, end, strand, name, previousLength and length. Start and end and strand are the positions of 5' and 3' end on the appropriate strand of the target sequence. Name is a concatenation of the ancestors of that fragment. Previous length is the sum of the fragment lengths of the ancestors of this fragment. Length is the width of this fragment. Returns NULL if no amplifications.
 #'
@@ -57,7 +58,7 @@ NULL
 #' 
 #' @examples
 #' enumerateAmplifications(c(10,20,30),c(40,50,60),maxLength=45)
-enumerateAmplifications<-function(forwards,reverses,strand='+',maxLength=50000,minLength=1,maxTotalLength=Inf,fragmentStart=1,fragmentEnd=Inf,baseName='',vocal=FALSE,previousLength=0){
+enumerateAmplifications<-function(forwards,reverses,strand='+',maxLength=50000,minLength=1,maxTotalLength=Inf,fragmentStart=1,fragmentEnd=Inf,baseName='',vocal=FALSE,previousLength=0,fullGenome=TRUE){
 	if(vocal&&runif(1)<.001)cat('.')
 	if(vocal&&runif(1)<.0001)cat(sprintf(' %d ',fragmentStart))
 	if(any(diff(forwards)<1))forwards<-sort(forwards)
@@ -68,13 +69,17 @@ enumerateAmplifications<-function(forwards,reverses,strand='+',maxLength=50000,m
 		thisEnds<-thisStarts+maxLength-1
 		thisEnds[thisEnds>=fragmentEnd]<-fragmentEnd
 		isTerminal<-diff(c(-Inf,thisStarts))+1>maxLength
+		thisRequiredBases<-fragmentEnd-thisStarts+1
 	}else{
 		thisEnds<-reverses[reverses>=fragmentStart&reverses<=fragmentEnd] 
 		if(length(thisEnds)==0)return(NULL)
 		thisStarts<-thisEnds-maxLength+1
 		thisStarts[thisStarts<=fragmentStart]<-fragmentStart
 		isTerminal<-diff(c(thisEnds,Inf))+1> maxLength
+		thisRequiredBases<-thisEnds-fragmentStart+1
 	}
+	if(fullGenome)thisRequiredBases<-0
+	
 	nFrags<-length(thisStarts)
 	nDigits<-ceiling(log10(nFrags+1))
 	sprintfPattern<-sprintf('%%s%s%%0%dd',ifelse(baseName=='','','_'),nDigits)
@@ -83,7 +88,7 @@ enumerateAmplifications<-function(forwards,reverses,strand='+',maxLength=50000,m
 		'end'=thisEnds,
 		'strand'=strand,
 		'name'=sprintf(sprintfPattern,baseName,1:nFrags),
-		'previousLength'=previousLength,
+		'previousLength'=previousLength+thisRequiredBases,
 		'length'=thisEnds-thisStarts+1,
 		stringsAsFactors=FALSE
 	)
@@ -92,10 +97,10 @@ enumerateAmplifications<-function(forwards,reverses,strand='+',maxLength=50000,m
 	#terminate fragments with too many amplifications to have much weight
 	isTerminal<-isTerminal|out$previousLength+out$length>=maxTotalLength
 	if(any(!isTerminal)){
-		daughters<-do.call(rbind,mapply(function(start,end,name){
-			enumerateAmplifications(forwards, reverses, strand=ifelse(strand=='+','-','+'), start, end, maxLength=maxLength, baseName=name,vocal=vocal,previousLength=previousLength+end-start+1,maxTotalLength=maxTotalLength,minLength=minLength)
+		daughters<-do.call(rbind,mapply(function(start,end,name,previousLength){
+			enumerateAmplifications(forwards, reverses, strand=ifelse(strand=='+','-','+'), start, end, maxLength=maxLength, baseName=name,vocal=vocal,previousLength=previousLength,maxTotalLength=maxTotalLength,minLength=minLength,fullGenome=FALSE)
 		},
-		out[!isTerminal,'start'],out[!isTerminal,'end'],out[!isTerminal,'name'],SIMPLIFY=FALSE))
+		out[!isTerminal,'start'],out[!isTerminal,'end'],out[!isTerminal,'name'],out[!isTerminal,'previousLength'],SIMPLIFY=FALSE))
 		out<-rbind(out,daughters)
 	}
 	return(out)
@@ -324,12 +329,12 @@ enumerateAmplificationsSingleStrand<-function(forwards,reverses,maxLength=30000,
       else activeReverses<-c(activeForwards,thisId)
       next() #removed from active, now done with this primer
     }
-    if(thisPrimer$type=='forward')currentForwardFrags<-rbind(currentForwardFrags,data.frame('start'=thisPrimer$start,'end'=thisPrimer$end,'last'=TRUE))
       #else nothing since no forwards
-    }else{
-      if(thisPrimer$type=='forward')currentForwardFrags<-rbind(currentForwardFrags,data.frame('start'=thisPrimer$start,'end'=thisPrimer$end,'last'=TRUE))
+    #if(thisPrimer$type=='forward')currentForwardFrags<-rbind(currentForwardFrags,data.frame('start'=thisPrimer$start,'end'=thisPrimer$end,'last'=TRUE))
+    #}else{
+      #if(thisPrimer$type=='forward')currentForwardFrags<-rbind(currentForwardFrags,data.frame('start'=thisPrimer$start,'end'=thisPrimer$end,'last'=TRUE))
       
-    }
+    #}
 
     if(thisPrimer$type=='forward')activeForwards<-activeForwards[activeForwards!=thisId]
     else activeReverses<-activeReverses[activeReverses!=thisId]

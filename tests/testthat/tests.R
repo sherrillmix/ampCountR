@@ -27,6 +27,8 @@ test_that("Test enumerateAmplifications",{
 	expect_that(nrow(enumerateAmplifications(1:20,c())), equals(20))
 	expect_that(nrow(enumerateAmplifications(1:3,4:6)), equals(19))
 	expect_that(enumerateAmplifications(23,c())$start, equals(23))
+	expect_that(sort(enumerateAmplifications(1:2,5)$previousLength), equals(c(0,0,4)))
+	expect_that(sort(enumerateAmplifications(1:2,9:10)$previousLength), equals(c(0,0,8,9,16)))
 })
 
 test_that("Test predictAmplificationsSingleStrand",{

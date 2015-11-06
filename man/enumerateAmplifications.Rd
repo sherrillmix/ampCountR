@@ -6,7 +6,8 @@
 \usage{
 enumerateAmplifications(forwards, reverses, strand = "+", maxLength = 50000,
   minLength = 1, maxTotalLength = Inf, fragmentStart = 1,
-  fragmentEnd = Inf, baseName = "", vocal = FALSE, previousLength = 0)
+  fragmentEnd = Inf, baseName = "", vocal = FALSE, previousLength = 0,
+  fullGenome = TRUE)
 }
 \arguments{
 \item{forwards}{Sorted positions of the start of the primers landing sites on the forward strand of the target sequence (5'-most base in the genome plus strand)}
@@ -30,6 +31,8 @@ enumerateAmplifications(forwards, reverses, strand = "+", maxLength = 50000,
 \item{vocal}{TRUE or FALSE Output progress?}
 
 \item{previousLength}{How many bases need to be amplified to reach this fragment (for use in recursion more than manually)}
+
+\item{fullGenome}{If TRUE then do not add the number of bases necessary to reach the primers to the previousLength (for use in recursion more than manually)}
 }
 \value{
 A data frame with columns start, end, strand, name, previousLength and length. Start and end and strand are the positions of 5' and 3' end on the appropriate strand of the target sequence. Name is a concatenation of the ancestors of that fragment. Previous length is the sum of the fragment lengths of the ancestors of this fragment. Length is the width of this fragment. Returns NULL if no amplifications.
