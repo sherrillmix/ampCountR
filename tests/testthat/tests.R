@@ -95,11 +95,11 @@ test_that("Test generateAmplificationTable",{
 })
 
 test_that("Test generateRandomPrimers",{
-	expect_true(max(sapply(replicate(1000,ampCountR:::generateRandomPrimers(1000,20)),max))<=1000)
-	expect_true(min(sapply(replicate(1000,ampCountR:::generateRandomPrimers(1000,20)),min))>=1)
-	expect_true(abs(mean(sapply(replicate(1000,ampCountR:::generateRandomPrimers(1000,20)),length))-1000/20)<10) #not 100% guarantee but extremely rare
-	expect_true(abs(mean(sapply(replicate(1000,ampCountR:::generateRandomPrimers(5000,20)),length))-5000/20)<20) #not 100% guarantee but extremely rare
-	expect_true(min(sapply(replicate(1000,ampCountR:::generateRandomPrimers(5000,20)),length))>0) 
+	expect_true(max(sapply(replicate(1000,ampcountr:::generateRandomPrimers(1000,20)),max))<=1000)
+	expect_true(min(sapply(replicate(1000,ampcountr:::generateRandomPrimers(1000,20)),min))>=1)
+	expect_true(abs(mean(sapply(replicate(1000,ampcountr:::generateRandomPrimers(1000,20)),length))-1000/20)<10) #not 100% guarantee but extremely rare
+	expect_true(abs(mean(sapply(replicate(1000,ampcountr:::generateRandomPrimers(5000,20)),length))-5000/20)<20) #not 100% guarantee but extremely rare
+	expect_true(min(sapply(replicate(1000,ampcountr:::generateRandomPrimers(5000,20)),length))>0) 
 })
 
 
