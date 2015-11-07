@@ -3,3 +3,4 @@
 ^.*.png$
 ^generatePlots.R$
 ^.travis.yml$
+^README.Rmd$

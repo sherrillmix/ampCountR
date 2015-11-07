@@ -12,6 +12,10 @@ install:
 localInstall:
 	R -e 'devtools::install()'
 
+README.md: README.Rmd
+	make localInstall
+	R -e 'knitr::opts_chunk$$set(fig.path="README_files/");knitr::knit("README.Rmd")'
+
 plots: generatePlots.R
 	Rscript generatePlots.R
 
