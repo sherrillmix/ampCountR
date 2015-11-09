@@ -64,21 +64,21 @@ enumerateAmplifications(forwards, reverses, maxLength = 50)
 ## 19    21  35      +     3_2_1             30     15
 ```
     
-A simple example of 3 forward primers and 3 reverse primers is:
+A simple example of generating predicted fragments for 3 forward primers and 3 reverse primers is:
     
 
 ```r
 forwards <- c(10, 20, 30)
-reverses <- c(50, 60, 70)
-frags <- enumerateAmplifications(forwards, reverses, maxLength = 120)
+reverses <- c(35, 45, 55)
+frags <- enumerateAmplifications(forwards, reverses, maxLength = 50)
+par(mar = c(2.9, 2.8, 0.2, 0.2), mgp = c(1.9, 0.75, 0), las = 1)
 plotFrags(frags)
 abline(v = forwards, lty = 2, col = "#FF000033")
 abline(v = reverses, lty = 2, col = "#0000FF33")
 ```
-    
-This generates predicted fragments of:
- ![Predicted fragments from 3 forward, 3 reverse primers](example3x3primers.png)
 
+![plot of chunk 3x3-example](README_files/3x3-example-1.png) 
+    
 This function is bit slow since it uses recursion without dynamic programming but <code>countAmplifications()</code> should easily handle any large sets.
 
 ### predictAmplifications
@@ -109,7 +109,6 @@ predictAmplifications(forwards, reverses, maxLength = 50)
 
 A longer example (also accessible from <code>example(ampcountr)</code>:
 ```R
-devtools::install_github('sherrillmix/ampcountr')
 library(ampcountr)
 forwards<-ampcountr:::generateRandomPrimers(100000,1000)
 reverses<-ampcountr:::generateRandomPrimers(100000,1000)
