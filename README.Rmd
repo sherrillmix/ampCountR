@@ -62,7 +62,6 @@ predictAmplifications(forwards,reverses,maxLength=50)
 
 A longer example (also accessible from <code>example(ampcountr)</code>:
 ```R
-library(ampcountr)
 forwards<-ampcountr:::generateRandomPrimers(100000,1000)
 reverses<-ampcountr:::generateRandomPrimers(100000,1000)
 amps<-predictAmplifications(forwards,reverses,maxLength=10000)
