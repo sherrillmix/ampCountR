@@ -197,6 +197,7 @@ generateAmplificationTable<-function(nForwards=10,nReverses=10){
 #'
 #' @param nForwards Calculate the expected amplifcations for a region with nForwards primers 5' on the correct strand and within range
 #' @param nReverses Calculate the expected amplifcations for a region with nReverses primers 3' on the correct strand and within range
+#' @param isTerminal If TRUE then there are no upstream forward primers to release the 5'-most forward primer in this set. If FALSE then the 5'-most forward primer is assumed to be released by an unknown upstream primer.
 #'
 #' @return The number of expected amplifications
 #'
@@ -208,10 +209,15 @@ generateAmplificationTable<-function(nForwards=10,nReverses=10){
 #' countAmplifications(20,20)
 #' countAmplifications(0,20)
 #' countAmplifications(20,0)
-countAmplifications<-function(nForwards,nReverses){
+countAmplifications<-function(nForwards,nReverses,isTerminal=TRUE){
 	if(nForwards>300)stop(simpleError(sprintf('To avoid a large lookup table countAmplifications limited to less than 300 forward primers. Maybe use generateAmplificationTable(%d,%d) directly',nForwards,nReverses)))
 	if(nReverses>300)stop(simpleError(sprintf('To avoid a large lookup table countAmplifications limited to less than 300 reverse primers. Maybe use generateAmplificationTable(%d,%d) directly',nForwards,nReverses)))
-	ampcountr::amplificationLookup[nForwards+1,nReverses+1]
+  if(isTerminal){
+    return(ampcountr::amplificationLookup[nForwards+1,nReverses+1])
+  }else{
+    if(nForwards==0)return(0)
+    else return(ampcountr::amplificationLookup[nForwards+1+1,nReverses+1]-1)
+  }
 }
 
 #' Calculate expected multiple strand displacement for a series of forwards and reverse primers
@@ -300,7 +306,6 @@ predictAmplifications<-function(forwards,reverses,maxLength=30000,genomeSize=max
 
 
 
-if(FALSE){
 enumerateAmplificationsSingleStrand<-function(forwards,reverses,maxLength=30000,genomeSize=max(c(forwards+maxLength-1,reverses))){
 	forwards<-unique(forwards)
 	reverses<-unique(reverses)
@@ -341,5 +346,4 @@ enumerateAmplificationsSingleStrand<-function(forwards,reverses,maxLength=30000,
     print(activeForwards)
     print(activeReverses)
   }
-}
 }

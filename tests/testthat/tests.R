@@ -20,6 +20,17 @@ test_that("Test countAmplifications",{
 	expect_that(countAmplifications(301,301), throws_error("limited to"))  #not really a desired outcome but have to cut somewhere
 })
 
+test_that("Test countAmplifications with non terminal start",{
+	expect_that(countAmplifications(0,0,FALSE), equals(0))
+	expect_that(countAmplifications(0,9,FALSE), equals(0))
+	expect_that(countAmplifications(1,1,FALSE), equals(2))
+	expect_that(countAmplifications(20,0,FALSE), equals(20))
+	expect_that(countAmplifications(2,3,FALSE), equals(18))
+	expect_that(countAmplifications(3,2,FALSE), equals(18))
+	expect_that(countAmplifications(2,2,FALSE), equals(10))
+	expect_that(countAmplifications(301,301,FALSE), throws_error("limited to"))  #not really a desired outcome but have to cut somewhere
+})
+
 test_that("Test enumerateAmplifications",{
 	expect_that(nrow(enumerateAmplifications(c(),c())), is_null())
 	expect_that(nrow(enumerateAmplifications(c(),1:9)), is_null())
