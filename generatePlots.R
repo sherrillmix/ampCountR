@@ -33,14 +33,3 @@ png('predictedEnrichmentExample.png',width=1600,height=800,res=200)
 dev.off()
 
 
-forwards<-c(10,20,30)
-reverses<-c(35,45,55)
-frags<-enumerateAmplifications(forwards,reverses,maxLength=50)
-png('example3x3primers.png',width=1000,height=1000,res=250)
-	par(mar=c(2.9,2.8,.2,.2),mgp=c(1.9,.75,0),las=1)
-	plotFrags(frags)
-	abline(v=forwards,lty=2,col='#FF000033')
-	abline(v=reverses,lty=2,col='#0000FF33')
-dev.off()
-
-
