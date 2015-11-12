@@ -59,51 +59,51 @@ NULL
 #' @examples
 #' enumerateAmplifications(c(10,20,30),c(40,50,60),maxLength=45)
 enumerateAmplifications<-function(forwards,reverses,strand='+',maxLength=50000,minLength=1,maxTotalLength=Inf,fragmentStart=1,fragmentEnd=Inf,baseName='',vocal=FALSE,previousLength=0,fullGenome=TRUE){
-	if(vocal&&runif(1)<.001)cat('.')
-	if(vocal&&runif(1)<.0001)cat(sprintf(' %d ',fragmentStart))
-	if(any(diff(forwards)<1))forwards<-sort(forwards)
-	if(any(diff(reverses)<1))reverses<-sort(reverses)
-	if(strand=='+'){
-		thisStarts<-forwards[forwards>=fragmentStart&forwards<=fragmentEnd] 
-		if(length(thisStarts)==0)return(NULL)
-		thisEnds<-thisStarts+maxLength-1
-		thisEnds[thisEnds>=fragmentEnd]<-fragmentEnd
-		isTerminal<-diff(c(-Inf,thisStarts))+1>maxLength
-		thisRequiredBases<-fragmentEnd-thisStarts+1
-	}else{
-		thisEnds<-reverses[reverses>=fragmentStart&reverses<=fragmentEnd] 
-		if(length(thisEnds)==0)return(NULL)
-		thisStarts<-thisEnds-maxLength+1
-		thisStarts[thisStarts<=fragmentStart]<-fragmentStart
-		isTerminal<-diff(c(thisEnds,Inf))+1> maxLength
-		thisRequiredBases<-thisEnds-fragmentStart+1
-	}
-	if(fullGenome)thisRequiredBases<-0
-	
-	nFrags<-length(thisStarts)
-	nDigits<-ceiling(log10(nFrags+1))
-	sprintfPattern<-sprintf('%%s%s%%0%dd',ifelse(baseName=='','','_'),nDigits)
-	out<-data.frame(
-		'start'=thisStarts,
-		'end'=thisEnds,
-		'strand'=strand,
-		'name'=sprintf(sprintfPattern,baseName,1:nFrags),
-		'previousLength'=previousLength+thisRequiredBases,
-		'length'=thisEnds-thisStarts+1,
-		stringsAsFactors=FALSE
-	)
-	#filter out shorts
-	out<-out[out$length>=minLength,]
-	#terminate fragments with too many amplifications to have much weight
-	isTerminal<-isTerminal|out$previousLength+out$length>=maxTotalLength
-	if(any(!isTerminal)){
-		daughters<-do.call(rbind,mapply(function(start,end,name,previousLength){
-			enumerateAmplifications(forwards, reverses, strand=ifelse(strand=='+','-','+'), start, end, maxLength=maxLength, baseName=name,vocal=vocal,previousLength=previousLength,maxTotalLength=maxTotalLength,minLength=minLength,fullGenome=FALSE)
-		},
-		out[!isTerminal,'start'],out[!isTerminal,'end'],out[!isTerminal,'name'],out[!isTerminal,'previousLength'],SIMPLIFY=FALSE))
-		out<-rbind(out,daughters)
-	}
-	return(out)
+  if(vocal&&runif(1)<.001)cat('.')
+  if(vocal&&runif(1)<.0001)cat(sprintf(' %d ',fragmentStart))
+  if(any(diff(forwards)<1))forwards<-sort(forwards)
+  if(any(diff(reverses)<1))reverses<-sort(reverses)
+  if(strand=='+'){
+    thisStarts<-forwards[forwards>=fragmentStart&forwards<=fragmentEnd] 
+    if(length(thisStarts)==0)return(NULL)
+    thisEnds<-thisStarts+maxLength-1
+    thisEnds[thisEnds>=fragmentEnd]<-fragmentEnd
+    isTerminal<-diff(c(-Inf,thisStarts))+1>maxLength
+    thisRequiredBases<-fragmentEnd-thisStarts+1
+  }else{
+    thisEnds<-reverses[reverses>=fragmentStart&reverses<=fragmentEnd] 
+    if(length(thisEnds)==0)return(NULL)
+    thisStarts<-thisEnds-maxLength+1
+    thisStarts[thisStarts<=fragmentStart]<-fragmentStart
+    isTerminal<-diff(c(thisEnds,Inf))+1> maxLength
+    thisRequiredBases<-thisEnds-fragmentStart+1
+  }
+  if(fullGenome)thisRequiredBases<-0
+  
+  nFrags<-length(thisStarts)
+  nDigits<-ceiling(log10(nFrags+1))
+  sprintfPattern<-sprintf('%%s%s%%0%dd',ifelse(baseName=='','','_'),nDigits)
+  out<-data.frame(
+    'start'=thisStarts,
+    'end'=thisEnds,
+    'strand'=strand,
+    'name'=sprintf(sprintfPattern,baseName,1:nFrags),
+    'previousLength'=previousLength+thisRequiredBases,
+    'length'=thisEnds-thisStarts+1,
+    stringsAsFactors=FALSE
+  )
+  #filter out shorts
+  out<-out[out$length>=minLength,]
+  #terminate fragments with too many amplifications to have much weight
+  isTerminal<-isTerminal|out$previousLength+out$length>=maxTotalLength
+  if(any(!isTerminal)){
+    daughters<-do.call(rbind,mapply(function(start,end,name,previousLength){
+      enumerateAmplifications(forwards, reverses, strand=ifelse(strand=='+','-','+'), start, end, maxLength=maxLength, baseName=name,vocal=vocal,previousLength=previousLength,maxTotalLength=maxTotalLength,minLength=minLength,fullGenome=FALSE)
+    },
+    out[!isTerminal,'start'],out[!isTerminal,'end'],out[!isTerminal,'name'],out[!isTerminal,'previousLength'],SIMPLIFY=FALSE))
+    out<-rbind(out,daughters)
+  }
+  return(out)
 }
 
 #' Plot fragments generated from multiple strand displacement
@@ -126,14 +126,14 @@ enumerateAmplifications<-function(forwards,reverses,strand='+',maxLength=50000,m
 #' frags<-enumerateAmplifications(c(10,20,30),c(40,50,60))
 #' plotFrags(frags)
 plotFrags<-function(frags,label=TRUE){
-	nFrags<-ifelse(is.null(frags),0,nrow(frags))
-	xlim<-c(min(frags$start,Inf),max(frags$end,-Inf))
-	if(xlim[1]==Inf)xlim[1]<-1
-	if(xlim[2]==-Inf)xlim[2]<-xlim[1]+1
-	plot(1,1,type='n',xlim=xlim,ylim=c(1,nFrags)+c(-.5,.5),xlab='Genome position (nt)',ylab='Fragment',yaxs='i')
-	if(nFrags>0)arrows(ifelse(frags$strand=='+',frags$start,frags$end),1:nFrags,ifelse(frags$strand=='+',frags$end,frags$start),1:nFrags,length=.02)
-	if(label&nFrags>0)text(apply(frags[,c('start','end')],1,mean),1:nFrags,frags$name,col='#00000077',adj=c(0.5,0),cex=.6)
-	return(NULL)
+  nFrags<-ifelse(is.null(frags),0,nrow(frags))
+  xlim<-c(min(frags$start,Inf),max(frags$end,-Inf))
+  if(xlim[1]==Inf)xlim[1]<-1
+  if(xlim[2]==-Inf)xlim[2]<-xlim[1]+1
+  plot(1,1,type='n',xlim=xlim,ylim=c(1,nFrags)+c(-.5,.5),xlab='Genome position (nt)',ylab='Fragment',yaxs='i')
+  if(nFrags>0)arrows(ifelse(frags$strand=='+',frags$start,frags$end),1:nFrags,ifelse(frags$strand=='+',frags$end,frags$start),1:nFrags,length=.02)
+  if(label&nFrags>0)text(apply(frags[,c('start','end')],1,mean),1:nFrags,frags$name,col='#00000077',adj=c(0.5,0),cex=.6)
+  return(NULL)
 }
 
 #' Generate random primers for testing
@@ -150,9 +150,9 @@ plotFrags<-function(frags,label=TRUE){
 #' @examples
 #' ampcountr:::generateRandomPrimers(10000,100)
 generateRandomPrimers<-function(genomeSize,frequency){
-	nPrimers<-round(genomeSize/frequency)
-	out<-unique(sort(ceiling(runif(nPrimers,1,genomeSize))))
-	return(out)
+  nPrimers<-round(genomeSize/frequency)
+  out<-unique(sort(ceiling(runif(nPrimers,1,genomeSize))))
+  return(out)
 }
 
 #' Fast calculation of expected multiple strand displacement amplification
@@ -176,19 +176,19 @@ generateRandomPrimers<-function(genomeSize,frequency){
 #' @examples
 #' generateAmplificationTable(20,20)
 generateAmplificationTable<-function(nForwards=10,nReverses=10){
-	out<-matrix(NA,nrow=nForwards+1,ncol=nReverses+1)
-	rownames(out)<-0:nForwards
-	colnames(out)<-0:nReverses
-	out['0',]<-0
-	out['1',]<-1
-	out[,'0']<-0:nForwards
-	out[1+1:nForwards,'1']<-out[1+1:nForwards,'0']*2-1
-	for(ii in 1+2:nForwards){
-		for(jj in 1+2:nReverses){
-			out[ii,jj]<-out[ii-1,jj]+out[ii,jj-1]+1
-		}
-	}
-	return(out)
+  out<-matrix(NA,nrow=nForwards+1,ncol=nReverses+1)
+  rownames(out)<-0:nForwards
+  colnames(out)<-0:nReverses
+  out['0',]<-0
+  out['1',]<-1
+  out[,'0']<-0:nForwards
+  out[1+1:nForwards,'1']<-out[1+1:nForwards,'0']*2-1
+  for(ii in 1+2:nForwards){
+    for(jj in 1+2:nReverses){
+      out[ii,jj]<-out[ii-1,jj]+out[ii,jj-1]+1
+    }
+  }
+  return(out)
 }
 
 #' Calculate expected multiple strand displacement amplification using lookup table
@@ -210,8 +210,8 @@ generateAmplificationTable<-function(nForwards=10,nReverses=10){
 #' countAmplifications(0,20)
 #' countAmplifications(20,0)
 countAmplifications<-function(nForwards,nReverses,isTerminal=TRUE){
-	if(nForwards>300)stop(simpleError(sprintf('To avoid a large lookup table countAmplifications limited to less than 300 forward primers. Maybe use generateAmplificationTable(%d,%d) directly',nForwards,nReverses)))
-	if(nReverses>300)stop(simpleError(sprintf('To avoid a large lookup table countAmplifications limited to less than 300 reverse primers. Maybe use generateAmplificationTable(%d,%d) directly',nForwards,nReverses)))
+  if(nForwards>300)stop(simpleError(sprintf('To avoid a large lookup table countAmplifications limited to less than 300 forward primers. Maybe use generateAmplificationTable(%d,%d) directly',nForwards,nReverses)))
+  if(nReverses>300)stop(simpleError(sprintf('To avoid a large lookup table countAmplifications limited to less than 300 reverse primers. Maybe use generateAmplificationTable(%d,%d) directly',nForwards,nReverses)))
   if(isTerminal){
     return(ampcountr::amplificationLookup[nForwards+1,nReverses+1])
   }else{
@@ -246,48 +246,52 @@ countAmplifications<-function(nForwards,nReverses,isTerminal=TRUE){
 #' predictAmplificationsSingleStrand(c(1,10,20),c(15,25,35),maxLength=40,genomeSize=45)
 #' predictAmplifications(c(1,10,20),c(15,25,35),maxLength=40,genomeSize=45)
 predictAmplificationsSingleStrand<-function(forwards,reverses,maxLength=30000,genomeSize=max(c(forwards+maxLength-1,reverses))){
-	forwards<-unique(forwards)
-	reverses<-unique(reverses)
-	nForwards<-length(forwards)
-	nReverses<-length(reverses)
-	pos<-c(forwards,forwards+maxLength,reverses-maxLength+1,reverses+1) #forwards+maxLength not -1 because the drop should be on the base after last base of amplification
-	forwardPlus<-c(rep(c(1,-1),each=nForwards),rep(0,nReverses*2))
-	reversePlus<-c(rep(0,nForwards*2),rep(c(1,-1),each=nReverses))
-	posOrder<-order(pos)
-	pos<-pos[posOrder]
-	forwardPlus<-forwardPlus[posOrder]
-	reversePlus<-reversePlus[posOrder]
-	out<-data.frame(
-		'start'=pos[-length(pos)],
-		'end'=pos[-1]-1,
-		'forwards'=cumsum(forwardPlus)[-length(pos)],
-		'reverses'=cumsum(reversePlus)[-length(pos)]
-	)
-	#fix where reverse primer ended and forward primer started at same pos
-	out$end<-apply(out[,c('start','end')],1,max)
-	#keep the last row when multiple events on single position (cumsums last contains completed counts for both)
-	out<-out[c(out$start[-nrow(out)]!=out$start[-1],TRUE),]
-	out<-out[out$end>=1&out$start<=genomeSize,]
-	#keep within genome boundaries
-	out[1,'start']<-max(1,out[1,'start'])
-	out[nrow(out),'end']<-min(genomeSize,out[nrow(out),'end'])
-	out$amplifications<-mapply(countAmplifications,out$forwards,out$reverses)
-	return(out)
+  forwards<-sort(unique(forwards))
+  reverses<-sort(unique(reverses))
+  isTerminal<-c(TRUE,diff(forwards)>maxLength)
+  inRangeReverses<-do.call(rbind,lapply(forwards,function(x)reverses>x&reverses-x<maxLength))
+  nForwards<-length(forwards)
+  nReverses<-length(reverses)
+  pos<-c(forwards,forwards+maxLength,reverses-maxLength+1,reverses+1) #forwards+maxLength not -1 because the drop should be on the base after last base of amplification
+  forwardPlus<-c(rep(c(1,-1),each=nForwards),rep(0,nReverses*2))
+  reversePlus<-c(rep(0,nForwards*2),rep(c(1,-1),each=nReverses))
+  posOrder<-order(pos)
+  pos<-pos[posOrder]
+  forwardPlus<-forwardPlus[posOrder]
+  reversePlus<-reversePlus[posOrder]
+  out<-data.frame(
+    'start'=pos[-length(pos)],
+    'end'=pos[-1]-1,
+    'forwards'=cumsum(forwardPlus)[-length(pos)],
+   'reverses'=cumsum(reversePlus)[-length(pos)]
+  )
+  #fix where reverse primer ended and forward primer started at same pos
+  out$end<-apply(out[,c('start','end')],1,max)
+  #keep the last row when multiple events on single position (cumsums last contains completed counts for both)
+  out<-out[c(out$start[-nrow(out)]!=out$start[-1],TRUE),]
+  out<-out[out$end>=1&out$start<=genomeSize,]
+  #keep within genome boundaries
+  out[1,'start']<-max(1,out[1,'start'])
+  out[nrow(out),'end']<-min(genomeSize,out[nrow(out),'end'])
+  regionForwards<-lapply(out$start,function(x)(x-forwards>=0&x-forwards+1<=maxLength))
+  regionReverses<-do.call(rbind,lapply(out$end,function(x)(reverses-x>=0&reverses-x+1<=maxLength)))
+  out$amplifications<-mapply(countAmplifications,out$forwards,out$reverses)
+  return(out)
 }
 
 #' @describeIn predictAmplificationsSingleStrand Calculate the expected amplifications across a genome for a set of forward and reverse primer binding sites for both strands
 #' @export
 predictAmplifications<-function(forwards,reverses,maxLength=30000,genomeSize=max(c(forwards+maxLength-1,reverses))){
-	forwardPred<-predictAmplificationsSingleStrand(forwards,reverses,maxLength,genomeSize)
-	reversePred<-predictAmplificationsSingleStrand(genomeSize-reverses+1,genomeSize-forwards+1,maxLength,genomeSize)
-	tmp<-reversePred$start
-	reversePred$start<-genomeSize-reversePred$end+1
-	reversePred$end<-genomeSize-tmp+1
-	reversePred<-reversePred[nrow(reversePred):1,]
-	if(any(reversePred$start!=forwardPred$start|reversePred$end!=reversePred$end))stop(simpleError('Mismatch between forward and reverse predictions'))
-	out<-forwardPred[,c('start','end','amplifications')]
-	out$amplifications<-out$amplifications+reversePred$amplifications
-	return(out)
+  forwardPred<-predictAmplificationsSingleStrand(forwards,reverses,maxLength,genomeSize)
+  reversePred<-predictAmplificationsSingleStrand(genomeSize-reverses+1,genomeSize-forwards+1,maxLength,genomeSize)
+  tmp<-reversePred$start
+  reversePred$start<-genomeSize-reversePred$end+1
+  reversePred$end<-genomeSize-tmp+1
+  reversePred<-reversePred[nrow(reversePred):1,]
+  if(any(reversePred$start!=forwardPred$start|reversePred$end!=reversePred$end))stop(simpleError('Mismatch between forward and reverse predictions'))
+  out<-forwardPred[,c('start','end','amplifications')]
+  out$amplifications<-out$amplifications+reversePred$amplifications
+  return(out)
 }
 
 
@@ -307,10 +311,10 @@ predictAmplifications<-function(forwards,reverses,maxLength=30000,genomeSize=max
 
 
 enumerateAmplificationsSingleStrand<-function(forwards,reverses,maxLength=30000,genomeSize=max(c(forwards+maxLength-1,reverses))){
-	forwards<-unique(forwards)
-	reverses<-unique(reverses)
-	nForwards<-length(forwards)
-	nReverses<-length(reverses)
+  forwards<-unique(forwards)
+  reverses<-unique(reverses)
+  nForwards<-length(forwards)
+  nReverses<-length(reverses)
   primers<-data.frame(
     'start'=c(forwards,reverses-maxLength+1),
     'end'=c(forwards+maxLength,reverses),
