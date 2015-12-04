@@ -212,12 +212,9 @@ generateAmplificationTable<-function(nForwards=10,nReverses=10){
 countAmplifications<-function(nForwards,nReverses,isTerminal=TRUE){
   if(nForwards>300)stop(simpleError(sprintf('To avoid a large lookup table countAmplifications limited to less than 300 forward primers. Maybe use generateAmplificationTable(%d,%d) directly',nForwards,nReverses)))
   if(nReverses>300)stop(simpleError(sprintf('To avoid a large lookup table countAmplifications limited to less than 300 reverse primers. Maybe use generateAmplificationTable(%d,%d) directly',nForwards,nReverses)))
-  if(isTerminal){
-    return(ampcountr::amplificationLookup[nForwards+1,nReverses+1])
-  }else{
-    if(nForwards==0)return(0)
-    else return(ampcountr::amplificationLookup[nForwards+1+1,nReverses+1]-1)
-  }
+  if(isTerminal) return(ampcountr::amplificationLookup[nForwards+1,nReverses+1])
+  else return(ampcountr::amplificationLookup[nForwards+1+1,nReverses+1]-1)
+  
 }
 
 #' Calculate expected multiple strand displacement for a series of forwards and reverse primers
