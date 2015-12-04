@@ -31,6 +31,22 @@ test_that("Test countAmplifications with non terminal start",{
 	expect_that(countAmplifications(301,301,FALSE), throws_error("limited to"))  #not really a desired outcome but have to cut somewhere
 })
 
+test_that("Test countAmplifications counting one forward at a time",{
+	expect_that(countAmplifications(0,0,FALSE,TRUE), equals(0))
+	expect_that(countAmplifications(0,9,FALSE,TRUE), equals(0))
+	expect_that(countAmplifications(1,1,FALSE,TRUE), equals(2))
+	expect_that(countAmplifications(20,0,FALSE,TRUE), equals(1))
+	expect_that(countAmplifications(2,2,FALSE,TRUE), equals(6))
+	expect_that(countAmplifications(2,1,TRUE,TRUE), equals(1))
+	expect_that(countAmplifications(2,1,FALSE,TRUE), equals(2))
+	expect_that(countAmplifications(2,100,TRUE,TRUE), equals(1))
+	expect_that(countAmplifications(100,10,TRUE,TRUE), equals(1))
+	expect_that(countAmplifications(3,3,TRUE,TRUE)+countAmplifications(2,3,FALSE,TRUE)+countAmplifications(1,3,FALSE,TRUE), equals(countAmplifications(3,3)))
+	expect_that(countAmplifications(10,3,TRUE,TRUE)+sum(sapply(9:1,countAmplifications,3,FALSE,TRUE)), equals(countAmplifications(10,3)))
+	expect_that(countAmplifications(15,5,TRUE,TRUE)+sum(sapply(14:1,countAmplifications,5,FALSE,TRUE)), equals(countAmplifications(15,5)))
+	expect_that(countAmplifications(301,301,FALSE,TRUE), throws_error("limited to"))  #not really a desired outcome but have to cut somewhere
+})
+
 test_that("Test enumerateAmplifications",{
 	expect_that(nrow(enumerateAmplifications(c(),c())), is_null())
 	expect_that(nrow(enumerateAmplifications(c(),1:9)), is_null())

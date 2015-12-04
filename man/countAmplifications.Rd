@@ -4,7 +4,8 @@
 \alias{countAmplifications}
 \title{Calculate expected multiple strand displacement amplification using lookup table}
 \usage{
-countAmplifications(nForwards, nReverses, isTerminal = TRUE)
+countAmplifications(nForwards, nReverses, isTerminal = TRUE,
+  onlyFirstPrimer = FALSE)
 }
 \arguments{
 \item{nForwards}{Calculate the expected amplifcations for a region with nForwards primers 5' on the correct strand and within range}
@@ -12,6 +13,8 @@ countAmplifications(nForwards, nReverses, isTerminal = TRUE)
 \item{nReverses}{Calculate the expected amplifcations for a region with nReverses primers 3' on the correct strand and within range}
 
 \item{isTerminal}{If TRUE then there are no upstream forward primers to release the 5'-most forward primer in this set. If FALSE then the 5'-most forward primer is assumed to be released by an unknown upstream primer.}
+
+\item{onlyFirstPrimer}{If TRUE then count only fragments whose initial fragment initiating from the 5'-most forward primer (mostly for internal usage to allow individual counting of sets of primers where only subsets overlap)}
 }
 \value{
 The number of expected amplifications
