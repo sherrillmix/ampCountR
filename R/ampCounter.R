@@ -249,18 +249,10 @@ predictAmplificationsSingleStrand<-function(forwards,reverses,maxLength=30000,ge
   inRangeReverses<-lapply(forwards,function(x)reverses[reverses>=x&reverses-x<maxLength])
   nForwards<-length(forwards)
   nReverses<-length(reverses)
-  pos<-c(forwards,forwards+maxLength,reverses-maxLength+1,reverses+1) #forwards+maxLength not -1 because the drop should be on the base after last base of amplification
-  forwardPlus<-c(rep(c(1,-1),each=nForwards),rep(0,nReverses*2))
-  reversePlus<-c(rep(0,nForwards*2),rep(c(1,-1),each=nReverses))
-  posOrder<-order(pos)
-  pos<-pos[posOrder]
-  forwardPlus<-forwardPlus[posOrder]
-  reversePlus<-reversePlus[posOrder]
+  pos<-sort(c(forwards,forwards+maxLength,reverses-maxLength+1,reverses+1)) #forwards+maxLength not -1 because the drop should be on the base after last base of amplification
   out<-data.frame(
     'start'=pos[-length(pos)],
-    'end'=pos[-1]-1,
-    'forwards'=cumsum(forwardPlus)[-length(pos)],
-   'reverses'=cumsum(reversePlus)[-length(pos)]
+    'end'=pos[-1]-1
   )
   #fix where reverse primer ended and forward primer started at same pos
   out$end<-apply(out[,c('start','end')],1,max)
