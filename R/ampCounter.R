@@ -246,8 +246,7 @@ countAmplifications<-function(nForwards,nReverses,isTerminal=TRUE,onlyFirstPrime
 predictAmplificationsSingleStrand<-function(forwards,reverses,maxLength=30000,genomeSize=max(c(forwards+maxLength-1,reverses))){
   if(length(forwards)>0)forwards<-sort(unique(forwards))
   if(length(reverses)>0)reverses<-sort(unique(reverses))
-  isTerminal<-c(TRUE,diff(forwards)>maxLength)
-  inRangeReverses<-lapply(forwards,function(x)reverses[reverses>x&reverses-x<maxLength])
+  inRangeReverses<-lapply(forwards,function(x)reverses[reverses>=x&reverses-x<maxLength])
   nForwards<-length(forwards)
   nReverses<-length(reverses)
   pos<-c(forwards,forwards+maxLength,reverses-maxLength+1,reverses+1) #forwards+maxLength not -1 because the drop should be on the base after last base of amplification
@@ -273,12 +272,11 @@ predictAmplificationsSingleStrand<-function(forwards,reverses,maxLength=30000,ge
   out[nrow(out),'end']<-min(genomeSize,out[nrow(out),'end'])
   regionForwards<-lapply(out$start,function(x)inRangeReverses[x-forwards>=0&x-forwards+1<=maxLength])
   reverseCounts<-mapply(function(forwards,end)sapply(forwards,function(x)sum(x>=end)),regionForwards,out$end,SIMPLIFY=FALSE)
-  regionIsTerminal<-lapply(out$start,function(x)isTerminal[x-forwards>=0&x-forwards+1<=maxLength])
-  out$amplifications<-mapply(function(reverseCount,isTerminal){
+  out$amplifications<-sapply(reverseCounts,function(reverseCount){
 	  if(length(reverseCount)==0)return(0)
+	  isTerminal<-c(TRUE,rep(FALSE,length(reverseCount)-1))
 	  return(sum(mapply(countAmplifications,length(reverseCount):1,reverseCount,isTerminal,TRUE)))
-  },reverseCounts,regionIsTerminal)
-  #out$amplifications<-mapply(countAmplifications,out$forwards,out$reverses)
+  })
   return(out)
 }
 
