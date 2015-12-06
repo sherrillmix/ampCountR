@@ -247,9 +247,8 @@ predictAmplificationsSingleStrand<-function(forwards,reverses,maxLength=30000,ge
   if(length(forwards)>0)forwards<-sort(unique(forwards))
   if(length(reverses)>0)reverses<-sort(unique(reverses))
   inRangeReverses<-lapply(forwards,function(x)reverses[reverses>=x&reverses-x<maxLength])
-  nForwards<-length(forwards)
-  nReverses<-length(reverses)
-  pos<-sort(c(forwards,forwards+maxLength,reverses-maxLength+1,reverses+1)) #forwards+maxLength not -1 because the drop should be on the base after last base of amplification
+  #forwards+maxLength not -1 because the drop should be on the base after last base of amplification
+  pos<-sort(c(forwards,forwards+maxLength,reverses-maxLength+1,reverses+1))
   out<-data.frame(
     'start'=pos[-length(pos)],
     'end'=pos[-1]-1
