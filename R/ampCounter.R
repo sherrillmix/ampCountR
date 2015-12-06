@@ -244,10 +244,10 @@ countAmplifications<-function(nForwards,nReverses,isTerminal=TRUE,onlyFirstPrime
 #' predictAmplificationsSingleStrand(c(1,10,20),c(15,25,35),maxLength=40,genomeSize=45)
 #' predictAmplifications(c(1,10,20),c(15,25,35),maxLength=40,genomeSize=45)
 predictAmplificationsSingleStrand<-function(forwards,reverses,maxLength=30000,genomeSize=max(c(forwards+maxLength-1,reverses))){
-  forwards<-sort(unique(forwards))
-  reverses<-sort(unique(reverses))
+  if(length(forwards)>0)forwards<-sort(unique(forwards))
+  if(length(reverses)>0)reverses<-sort(unique(reverses))
   isTerminal<-c(TRUE,diff(forwards)>maxLength)
-  inRangeReverses<-do.call(rbind,lapply(forwards,function(x)reverses>x&reverses-x<maxLength))
+  inRangeReverses<-lapply(forwards,function(x)reverses[reverses>x&reverses-x<maxLength])
   nForwards<-length(forwards)
   nReverses<-length(reverses)
   pos<-c(forwards,forwards+maxLength,reverses-maxLength+1,reverses+1) #forwards+maxLength not -1 because the drop should be on the base after last base of amplification
@@ -271,9 +271,14 @@ predictAmplificationsSingleStrand<-function(forwards,reverses,maxLength=30000,ge
   #keep within genome boundaries
   out[1,'start']<-max(1,out[1,'start'])
   out[nrow(out),'end']<-min(genomeSize,out[nrow(out),'end'])
-  regionForwards<-lapply(out$start,function(x)(x-forwards>=0&x-forwards+1<=maxLength))
-  regionReverses<-do.call(rbind,lapply(out$end,function(x)(reverses-x>=0&reverses-x+1<=maxLength)))
-  out$amplifications<-mapply(countAmplifications,out$forwards,out$reverses)
+  regionForwards<-lapply(out$start,function(x)inRangeReverses[x-forwards>=0&x-forwards+1<=maxLength])
+  reverseCounts<-mapply(function(forwards,end)sapply(forwards,function(x)sum(x>=end)),regionForwards,out$end,SIMPLIFY=FALSE)
+  regionIsTerminal<-lapply(out$start,function(x)isTerminal[x-forwards>=0&x-forwards+1<=maxLength])
+  out$amplifications<-mapply(function(reverseCount,isTerminal){
+	  if(length(reverseCount)==0)return(0)
+	  return(sum(mapply(countAmplifications,length(reverseCount):1,reverseCount,isTerminal,TRUE)))
+  },reverseCounts,regionIsTerminal)
+  #out$amplifications<-mapply(countAmplifications,out$forwards,out$reverses)
   return(out)
 }
 
