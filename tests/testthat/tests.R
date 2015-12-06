@@ -73,6 +73,9 @@ test_that("Test predictAmplificationsSingleStrand",{
 	expect_that(predictAmplificationsSingleStrand(c(1,3),c(3,5),3)$amplifications, equals(c(1,5,1)))
 	expect_that(predictAmplificationsSingleStrand(c(1,3),c(3,5),3)$start, equals(c(1,3,4)))
 	expect_that(predictAmplificationsSingleStrand(c(1,3),c(3,5),3)$end, equals(c(2,3,5)))
+	expect_that(predictAmplificationsSingleStrand(1:2,15,10)$amplifications, equals(c(1,2,2,1,0)))
+	expect_that(predictAmplificationsSingleStrand(1:2,15,10)$amplifications, equals(c(1,2,2,1,0)))
+	expect_that(predictAmplificationsSingleStrand(1:2,15:16,10)$amplifications, equals(c(1,2,2,2,1,0,0)))
 })
 
 test_that("Test predictAmplifications",{
@@ -95,6 +98,8 @@ test_that("Test predictAmplifications",{
 	expect_that(predictAmplifications(c(1,3),c(3,5),3)$amplifications, equals(c(2,10,2)))
 	expect_that(predictAmplifications(c(1,3),c(3,5),3)$start, equals(c(1,3,4)))
 	expect_that(predictAmplifications(c(1,3),c(3,5),3)$end, equals(c(2,3,5)))
+	expect_that(predictAmplifications(1:2,15,10)$amplifications, equals(c(1,2,3,2,1)))
+	expect_that(predictAmplifications(1:2,15:16,10)$amplifications, equals(c(1,2,3,4,3,2,1)))
 })
 
 test_that("Test consistency",{
