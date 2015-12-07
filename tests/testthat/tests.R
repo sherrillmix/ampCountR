@@ -60,6 +60,8 @@ test_that("Test enumerateAmplifications",{
 
 test_that("Test predictAmplificationsSingleStrand",{
 	expect_that(max(predictAmplificationsSingleStrand(1:3,4:6)$amplification), equals(19))
+	expect_that(predictAmplificationsSingleStrand(3:1,6:4), equals(predictAmplificationsSingleStrand(1:3,4:6)))
+	expect_that(predictAmplificationsSingleStrand(3:1,6:4), equals(predictAmplificationsSingleStrand(c(2,3,1),c(6,4,5))))
 	expect_that(nrow(predictAmplificationsSingleStrand(1:3,4:6,10)), equals(8))
 	expect_that(nrow(predictAmplificationsSingleStrand(1,c())), equals(1))
 	expect_that(nrow(predictAmplificationsSingleStrand(c(),1)), equals(1))
@@ -80,6 +82,8 @@ test_that("Test predictAmplificationsSingleStrand",{
 
 test_that("Test predictAmplifications",{
 	expect_that(max(predictAmplifications(1:3,4:6)$amplification), equals(38))
+	expect_that(predictAmplifications(3:1,6:4), equals(predictAmplifications(1:3,4:6)))
+	expect_that(predictAmplifications(3:1,6:4), equals(predictAmplifications(c(3,1,2),c(4,6,5))))
 	expect_that(nrow(predictAmplifications(1:3,4:6,10)), equals(8))
 	expect_that(nrow(predictAmplifications(1,c())), equals(1))
 	expect_that(nrow(predictAmplifications(c(),1)), equals(1))
