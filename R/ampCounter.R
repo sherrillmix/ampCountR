@@ -261,7 +261,7 @@ predictAmplificationsSingleStrand<-function(forwards,reverses,maxLength=30000,ge
   #keep within genome boundaries
   out[1,'start']<-max(1,out[1,'start'])
   out[nrow(out),'end']<-min(genomeSize,out[nrow(out),'end'])
-  regionForwards<-lapply(out$start,function(x)inRangeReverses[x-forwards>=0&x-forwards+1<=maxLength])
+  regionForwards<-lapply(out$start,function(x)inRangeReverses[forwards<=x&forwards>=x-maxLength+1])
   reverseCounts<-mapply(function(forwards,end)sapply(forwards,function(x)sum(x>=end)),regionForwards,out$end,SIMPLIFY=FALSE)
   out$amplifications<-sapply(reverseCounts,function(reverseCount){
 	  if(length(reverseCount)==0)return(0)
